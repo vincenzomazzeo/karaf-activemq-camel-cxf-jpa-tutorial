@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0" xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0" xmlns:camel="http://camel.apache.org/schema/blueprint" xmlns:cxf="http://camel.apache.org/schema/blueprint/cxf" xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/xmlns/transactions/v1.0.0 http://aries.apache.org/schemas/transaction/transactionv10.xsd
+		http://aries.apache.org/xmlns/jpa/v1.1.0 http://aries.apache.org/schemas/jpa/jpa_110.xsd
+		http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint-2.15.2.xsd
+		http://camel.apache.org/schema/blueprint/cxf http://camel.apache.org/schema/cxf/camel-cxf-2.15.2-blueprint.xsd
+	" default-activation="eager">
+
+	<!-- Event Bus Client Service -->
+	<reference id="eventBusClientService" timeout="0" interface="it.ninjatech.eventbus.client.EventBusClientService" />
+
+	<!-- Event Handler -->
+	<bean id="eventHandler" class="it.ninjatech.warehouse.EventHandler">
+		<argument ref="eventBusClientService" />
+	</bean>
+
+	<!-- DAO -->
+	<bean id="productDao" class="it.ninjatech.warehouse.dao.ProductDao">
+		<jpa:context unitname="warehouse_pu" property="entityManager"/>
+		<tx:transaction method="*" value="Required"/>
+	</bean>
+
+	<!-- CXF -->
+	<bean id="wadlGenerator" class="org.apache.cxf.jaxrs.model.wadl.WadlGenerator" />
+	
+	<bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+	
+	<cxf:rsServer id="warehouseRs" address="http://0.0.0.0:9191/warehouse" serviceClass="it.ninjatech.warehouse.rs.WarehouseService">
+		<cxf:providers>
+			<ref component-id="wadlGenerator" />
+			<ref component-id="jsonProvider" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<!-- Camel RouteBuilder -->
+	<bean id="camelWarehouseRouteBuilder" class="it.ninjatech.warehouse.route.WarehouseRouteBuilder">
+		<argument value="warehouseRs" />
+		<argument value="productDao" />
+		<argument value="eventHandler" />
+	</bean>
+
+	<!-- Camel -->
+	<camel:camelContext id="warehouseCamel">
+		<camel:routeBuilder ref="camelWarehouseRouteBuilder" />
+	</camel:camelContext>
+
+</blueprint>

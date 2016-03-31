@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="warehouse-${pom.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
+    <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/0.8.0/xml/features</repository>
+    <repository>mvn:org.apache.camel.karaf/apache-camel/2.15.2/xml/features</repository>
+    <repository>mvn:it.ninjatech.karaf-activemq-camel-cxf-jpa-tutorial/event-bus-features/1.0.0/xml/features</repository>
+
+    <feature name="warehouse-service" version="${pom.version}">
+        <feature>jndi</feature>
+        <feature>jdbc</feature>
+        <feature version="2.0.0">jpa</feature>
+        <feature version="2.3.0">openjpa</feature>
+        <feature>pax-jdbc-spec</feature>
+        <feature>pax-jdbc-config</feature>
+        <feature>pax-jdbc-h2</feature>
+        <feature>pax-jdbc-pool-dbcp2</feature>
+        <feature>camel</feature>
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-cxf</feature>
+        <feature>cxf</feature>
+        <feature>event-bus-client</feature>
+        <bundle>mvn:${groupId}/warehouse-service/${pom.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
+    </feature>
+    
+</features>

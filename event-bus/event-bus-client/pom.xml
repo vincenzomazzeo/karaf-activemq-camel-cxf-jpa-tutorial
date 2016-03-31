@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<!---->
+    <modelVersion>4.0.0</modelVersion>
+	<!---->
+    <parent> 
+        <groupId>it.ninjatech.karaf-activemq-camel-cxf-jpa-tutorial</groupId>  
+        <artifactId>event-bus</artifactId>  
+        <version>1.0.0</version> 
+    </parent>
+	<!---->
+    <artifactId>event-bus-client</artifactId>
+    <packaging>bundle</packaging>
+    <name>[Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Event Bus Client</name>
+	<!---->
+    <properties />
+	<!---->
+    <dependencies>
+    	<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>it.ninjatech.karaf-activemq-camel-cxf-jpa-tutorial</groupId>
+			<artifactId>event-bus-model</artifactId>
+		</dependency>
+    </dependencies>
+	<!---->
+    <build>
+    	<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+        <plugins>
+            <plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<extensions>true</extensions>
+				<configuration>
+					<instructions>
+						<Bundle-Name>${project.name}</Bundle-Name>
+						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+						<Bundle-License>${project.licenses}</Bundle-License>
+						<Private-Package>it.ninjatech.eventbus.client.route</Private-Package>
+						<Export-Package>it.ninjatech.eventbus.client</Export-Package>
+						<Import-Package>*, it.ninjatech.eventbus.model</Import-Package>
+					</instructions>
+				</configuration>
+			</plugin>
+        </plugins>
+        <finalName>${project.groupId}.${project.artifactId}</finalName>
+    </build>
+</project>

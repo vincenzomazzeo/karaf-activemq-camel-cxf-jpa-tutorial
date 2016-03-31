@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0" xmlns:camel="http://camel.apache.org/schema/blueprint"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/xmlns/jpa/v1.1.0 http://aries.apache.org/schemas/jpa/jpa_110.xsd
+		http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint-2.15.2.xsd
+	" default-activation="eager">
+
+	<!-- Properties -->
+	<cm:property-placeholder id="eventBusServerProperties" persistent-id="it.ninjatech.eventbus" />
+
+	<!-- JTA -->
+	<reference id="jtaTransactionManager" interface="javax.transaction.TransactionManager" />
+
+	<bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+		<argument ref="jtaTransactionManager" />
+	</bean>
+
+	<!-- ActiveMQ -->
+	<bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL">
+			<value>${jmsUrl}</value>
+		</property>
+	</bean>
+
+	<bean id="jmsPooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
+		<property name="maxConnections" value="1" />
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+	</bean>
+
+	<bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+		<property name="connectionFactory" ref="jmsPooledConnectionFactory" />
+	</bean>
+	
+	<!-- Camel Components -->
+	<bean id="eventBusServerJms" class="org.apache.activemq.camel.component.ActiveMQComponent">
+		<property name="configuration" ref="jmsConfig" />
+	</bean>
+
+	<bean id="eventBusServerJpa" class="org.apache.camel.component.jpa.JpaComponent">
+		<jpa:unit unitname="event_bus_pu" property="entityManagerFactory" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<!-- Camel RouteBuilder -->
+	<bean id="camelEventBusServerRouteBuilder" class="it.ninjatech.eventbus.server.route.EventBusServerRouteBuilder">
+		<argument value="eventBusServerJms" />
+		<argument value="${jmsQueueId}" />
+		<argument value="eventBusServerJpa" />
+		<argument value="event_bus_pu" />
+	</bean>
+	
+	<!-- Camel -->
+	<camel:camelContext id="eventBusEngineCamel">
+		<camel:routeBuilder ref="camelEventBusServerRouteBuilder" />
+	</camel:camelContext>
+
+</blueprint>
