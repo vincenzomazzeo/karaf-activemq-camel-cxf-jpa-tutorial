@@ -108,6 +108,7 @@ karaf
 ###### Camel
 ##### POM
 #### Event Bus Client
+[Test](#code)
 ##### Code
 ##### Blueprint
 ###### Configuration
