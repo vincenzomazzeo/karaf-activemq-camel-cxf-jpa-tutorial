@@ -213,7 +213,7 @@ Tool: Bnd-1.50.0
 ```
 
 #### Event Bus Server
-The Event Bus Server module is the subscriber of the Event Bus system: each time an event is enqueued the Server dequeues and stores it into the database. **This module uses [Camel][apache camel] to connect to ActiveMQ[apache activemq] and to store the event into the database via [JPA]**.  
+The Event Bus Server module is the subscriber of the Event Bus system: each time an event is enqueued the Server dequeues and stores it into the database. **This module uses [Camel][apache camel] to connect to [ActiveMQ][apache activemq] and to store the event into the database via [JPA]**.  
 ![Event Bus Server Structure](/images/eventbusserver_structure.png)
 
 ##### Event Bus Server Code
@@ -687,7 +687,7 @@ Tool: Bnd-1.50.0
 Released and distributed under the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 ## References
-[Schneider Karaf Tutorial](https://github.com/cschneider/Karaf-Tutorial)
+[Schneider Karaf Tutorial](https://github.com/cschneider/Karaf-Tutorial)  
 [Karaf Tutorial - Using the Configuration Admin Service](http://www.liquid-reality.de/display/liquid/2011/09/23/Karaf+Tutorial+Part+2+-+Using+the+Configuration+Admin+Service)
 
 [apache activemq]: http://activemq.apache.org/
