@@ -51,11 +51,11 @@ CREATE TABLE event_bus_journal (
   PRIMARY KEY  (id)
 );
 ```
-As there is an _IDENTITY_ column, the DBMS will create a sequence used to automatically fill it.
+As there is an _IDENTITY_ column, the DBMS will create a sequence used to automatically fill it.  
 ![SQLWorkbench Event Bus Schema](/images/sqlworkbench_eventbus_schema.png)
 
 Then let's manage the Warehouse DB.
-The connection URL is `jdbc:h2:~/warehouse;AUTO_SERVER=TRUE` and the user is `sa` with blank password.
+The connection URL is `jdbc:h2:~/warehouse;AUTO_SERVER=TRUE` and the user is `sa` with blank password.  
 ![SQLWorkbench Warehouse Connection](/images/sqlworkbench_warehouse_connection.png)
 
 The Warehouse DB has one table, `product`, which will contain the warehouse products and a sequence, `product_sequence`, used to manage the product ID.
@@ -79,7 +79,7 @@ activemq.bat start
 ```
 ![ActiveMQ Shell](/images/activemq_shell.png)
 
-After the service has started, it's possible to access to the console using the browser and accessing to the URL `http://localhost:8161`
+After the service has started, it's possible to access to the console using the browser and accessing to the URL `http://localhost:8161`  
 ![ActiveMQ Console](/images/activemq_console.png)
 
 ### [Apache Karaf]
@@ -106,7 +106,7 @@ In an enterprise system the [Server][event bus server] module could be deployed 
 
 In order to explain the integration between [ActiveMQ][apache activemq], [Camel][apache camel] and [JPA], each event will be dequeued and stored in the database by [Camel][apache camel] using its [ActiveMQ][apache camel activemq component] and [JPA][apache camel jpa component] components.
 
-The maven project is structured with a parent module (EventBus) and four children modules (Model, Server, Client and Features).
+The maven project is structured with a parent module (EventBus) and four children modules (Model, Server, Client and Features).  
 ![Event Bus Structure](/images/eventbus_structure.png)
 
 The EventBus POM contains the [Apache Felix Bundle Plugin] needed to create the bundles.
@@ -127,7 +127,7 @@ The EventBus POM contains the [Apache Felix Bundle Plugin] needed to create the 
 ```
 
 #### Event Bus Model
-The Event Bus Model module contains the data model classes needed by both the [Server][event bus server] and [Client][event bus client] modules and the configuration for [JPA].
+The Event Bus Model module contains the data model classes needed by both the [Server][event bus server] and [Client][event bus client] modules and the configuration for [JPA].  
 ![Event Bus Model Structure](/images/eventbusmodel_structure.png)
 
 ##### Event Bus Model Code
@@ -213,7 +213,7 @@ Tool: Bnd-1.50.0
 ```
 
 #### Event Bus Server
-The Event Bus Server module is the subscriber of the Event Bus system: each time an event is enqueued the Server dequeues and stores it into the database. **This module uses [Camel][apache camel] to connect to ActiveMQ[apache activemq] and to store the event into the database via [JPA]**.
+The Event Bus Server module is the subscriber of the Event Bus system: each time an event is enqueued the Server dequeues and stores it into the database. **This module uses [Camel][apache camel] to connect to ActiveMQ[apache activemq] and to store the event into the database via [JPA]**.  
 ![Event Bus Server Structure](/images/eventbusserver_structure.png)
 
 ##### Event Bus Server Code
@@ -458,7 +458,7 @@ Tool: Bnd-1.50.0
 ```
 
 #### Event Bus Client
-The Event Bus Client module is the publisher of the Event Bus system: it's used by one or more applications that need to generate events. **This module uses [Camel][apache camel] to connect to [ActiveMQ][apache activemq]**.
+The Event Bus Client module is the publisher of the Event Bus system: it's used by one or more applications that need to generate events. **This module uses [Camel][apache camel] to connect to [ActiveMQ][apache activemq]**.  
 ![Event Bus Client Structure](/images/eventbusclient_structure.png)
 
 
