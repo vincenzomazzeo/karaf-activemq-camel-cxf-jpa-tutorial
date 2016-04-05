@@ -99,7 +99,7 @@ karaf
 ##### Code
 ##### JPA Persistence Descriptor
 ##### POM
-#### Event Bus Server
+#### EventBusServer
 ##### Code
 ##### Blueprint
 ###### Configuration
@@ -108,7 +108,7 @@ karaf
 ###### Camel
 ##### POM
 #### Event Bus Client
-[Test](#code)
+[Test](#eventbusserver#code)
 ##### Code
 ##### Blueprint
 ###### Configuration
