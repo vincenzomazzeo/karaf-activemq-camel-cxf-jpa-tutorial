@@ -27,7 +27,7 @@ In the last times I used [Apache Karaf](http://karaf.apache.org/), [Apache Activ
 
 ## Environment
 ### H2
-The system uses two DBs, one used by the [Event Bus Server](#event%20bus%20server) module and one used by the [Warehouse Service](#code).
+The system uses two DBs, one used by the [Event Bus Server] module and one used by the [Warehouse Service](#event-bus-server).
 The DBMS used is [H2](http://www.h2database.com/html/main.html) started in _Server Mode_. Once downloaded and unzipped the zip (for more information about installation refer to the [documentation](http://www.h2database.com/html/installation.html)) launch the DBMS with
 ```bash
 C:\Tools\h2\bin\java -cp "h2-1.3.176.jar;%H2DRIVERS%;%CLASSPATH%" org.h2.tools.Server -tcp
@@ -99,7 +99,7 @@ karaf
 ##### Code
 ##### JPA Persistence Descriptor
 ##### POM
-#### Event%20Bus%20Server
+#### Event Bus Server
 ##### Code
 ##### Blueprint
 ###### Configuration
@@ -127,3 +127,5 @@ karaf
 Released and distributed under the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 ## References
+
+[Event Bus Server]: #event-bus-server
