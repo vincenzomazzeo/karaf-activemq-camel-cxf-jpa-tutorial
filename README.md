@@ -83,12 +83,46 @@ After the start of the service, it's possible to access to the console using the
 ![ActiveMQ Console](/images/activemq_console.png)
 
 ### Apache Karaf
-To simulate a more complex system this tutorial uses two instances of Karaf, the first in which is deployed the Event Bus Server and the second in which are deployed the Event Bus Client and the Warehouse Service.
+To simulate a more complex system this tutorial uses two instances of Karaf, the first in which is deployed the [Event Bus Server](#Event Bus Server) and the second in which are deployed the [Event Bus Client](#Event Bus Client) and the [Warehouse Service](#Warehouse Service).
 Once downloaded and unzipped the zip (for more information about installation and usage refer to the [User Guide](https://karaf.apache.org/manual/latest/users-guide/)) in two different directories (I used the suffixes _first_ and _second_) launch both instances with
 ```bash
 karaf
 ```
->Note: in order to launch the second instance it's necessary to change the `rmiRegistryPort` and `rmiServerPort` properties of the file `org.apache.karaf.management.cfg` located in the `etc` directory. I set them respectively to `1098` and `44443`
+>Note: in order to launch the second instance it's necessary to change the `rmiRegistryPort` and `rmiServerPort` properties of the `org.apache.karaf.management.cfg` file located in the `etc` directory. I set them respectively to `1098` and `44443`
 
 ![Karaf Shell First](/images/karaf_shell_first.png)
 ![Karaf Shell Second](/images/karaf_shell_second.png)
+
+## Applications
+### Event Bus
+#### Event Bus Model
+##### Code
+##### JPA Persistence Descriptor
+##### POM
+#### Event Bus Server
+##### Code
+##### Blueprint
+###### Configuration
+###### JMS
+###### JTA and JPA
+###### Camel
+##### POM
+#### Event Bus Client
+##### Code
+##### Blueprint
+###### Configuration
+###### JMS
+###### Camel
+###### Service
+##### POM
+#### Event Bus Features
+### Warehouse
+#### Warehouse Service
+#### Warehouse Features
+## Deploy
+## Test
+
+## License
+Released and distributed under the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+## References
