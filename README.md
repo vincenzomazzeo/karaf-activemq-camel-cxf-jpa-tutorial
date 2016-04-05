@@ -27,8 +27,8 @@ In the last times I used [Apache Karaf](http://karaf.apache.org/), [Apache Activ
 
 ## Environment
 ### H2
-The system uses two DBs, one used by the [Event Bus Server] module and one used by the [Warehouse Service](#event-bus-server).
-The DBMS used is [H2](http://www.h2database.com/html/main.html) started in _Server Mode_. Once downloaded and unzipped the zip (for more information about installation refer to the [documentation](http://www.h2database.com/html/installation.html)) launch the DBMS with
+The system uses two DBs, one used by the [Event Bus Server] module and one used by the [Warehouse Service](#event-bus-server_code).
+The [DBMS](#event-bus-server/#code) [used](#event-bus-server#code) is [H2](http://www.h2database.com/html/main.html) started in _Server Mode_. Once downloaded and unzipped the zip (for more information about installation refer to the [documentation](http://www.h2database.com/html/installation.html)) launch the DBMS with
 ```bash
 C:\Tools\h2\bin\java -cp "h2-1.3.176.jar;%H2DRIVERS%;%CLASSPATH%" org.h2.tools.Server -tcp
 ```
