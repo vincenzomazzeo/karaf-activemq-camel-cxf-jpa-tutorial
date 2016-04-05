@@ -14,6 +14,7 @@ I have used the following versions of these technologies:
 - [Jackson](https://github.com/FasterXML/jackson) version 2.7.3
 
 The [JPA](http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html) implementation used is [Apache OpenJPA](http://openjpa.apache.org/) version 2.3.0.
+
 The Java version used is 1.7.0_79.
 The DBMS used is [H2](http://www.h2database.com/html/main.html) version 1.3.176 (2014-04-05).
 The tool used to query the DB is [SQLWorkbench](http://www.sql-workbench.net/index.html) build 119 (2016-01-31). 
