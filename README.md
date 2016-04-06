@@ -100,7 +100,7 @@ karaf
 ## Applications
 
 ### Event Bus
-The Event Bus is a [publish/subscribe] system. It's composed by three modules:
+The Event Bus is a [publish/subscribe] system. It's composed of three modules:
 
 - [Model][event bus model] containing the data model classes needed by the [Server][event bus server] and the [Client][event bus client];
 - [Server][event bus server] which is the subscriber;
@@ -110,11 +110,11 @@ In an enterprise system the [Server][event bus server] module could be deployed 
 
 In order to explain the integration between [ActiveMQ][apache activemq], [Camel][apache camel] and [JPA], each event will be dequeued and stored in the database by [Camel][apache camel] using its [ActiveMQ][apache camel activemq component] and [JPA][apache camel jpa component] components.
 
-The maven project is structured with a parent module (EventBus) and four children modules (Model, Server, Client and Features).  
+The [maven][apache maven] project is structured with a parent module (EventBus) and four children modules (Model, Server, Client and Features).  
 
 ![Event Bus Structure](/images/eventbus_structure.png)
 
-The EventBus POM contains the [Apache Felix Bundle Plugin] needed to create the bundles.
+The EventBus [POM][apache pom] contains the [Apache Felix Bundle Plugin] needed to create the bundles.
 ```xml
 <pluginManagement>
 	<plugins>
@@ -137,7 +137,7 @@ The Event Bus Model module contains the data model classes needed by both the [S
 ![Event Bus Model Structure](/images/eventbusmodel_structure.png)
 
 ##### Event Bus Model Code
-The data model is composed by only one class:`Event`. It's a serializable [POJO] containing four fields annotated with [JPA] annotations.
+The data model is composed of only one class:`Event`. It's a serializable [POJO] containing four fields annotated with [JPA] annotations.
 ```java
 @Entity
 @Table(name = "event_bus_journal")
@@ -687,13 +687,13 @@ The Event Bus Features module contains only the `feature.xml` file needed by [Ka
 ##### Event Bus Features XML
 In the `features.xml` file are listed the dependencies and the modules - called features - of the application.
 
-First of there is the list of the repositories that contain the third-party features needed by the application
+First there is the list of the repositories that contain the third-party features needed by the application
 ```xml
 <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/0.8.0/xml/features</repository>
 <repository>mvn:org.apache.camel.karaf/apache-camel/2.15.2/xml/features</repository>
 <repository>mvn:org.apache.activemq/activemq-karaf/5.11.1/xml/features</repository>
 ```
-In this case the application depends on [PAX JDBC] whis is an OSGi [JDBC] Service Implementation, [Camel][apache camel] and [ActiveMQ][apache activemq].
+In this case the application depends on [PAX JDBC], which is an OSGi [JDBC] Service Implementation, [Camel][apache camel] and [ActiveMQ][apache activemq].
 
 Then there are the features definition:
 
@@ -823,14 +823,123 @@ The module is packed as POM and uses the [Maven Build Helper Plugin][mojohaus bu
 The file name has to have the form `<artifactId>-<version>-features.xml`. In order to add the `features` suffix is used the `classifier` tag.
 
 ### Warehouse
+The Warehouse is a REST application used to handle a warehouse inventory.
+
+The [maven][apache maven] project is structured with a parent module (Warehouse) and two children modules (Service and Features).  
+
+![Warehouse Structure](/images/warehouse_structure.png)
+
+Such as the [Event Bus] project also the Warehouse [POM][apache maven pom] contains the [Apache Felix Bundle Plugin]
+```xml
+<plugin>
+	<groupId>org.apache.felix</groupId>
+	<artifactId>maven-bundle-plugin</artifactId>
+	<version>2.3.7</version>
+	<extensions>true</extensions>
+	<configuration>
+		<instructions />
+	</configuration>
+</plugin>
+```
 
 #### Warehouse Service
+The Warehouse Service module contains the data model classes, the REST endpoints, the Business Logic and the configuration for [JPA] needed to handle the warehouse.  
+
+![Warehouse Service Structure](/images/warehouseservice_structure.png)
+
+##### Warehouse Service Code
+TODO
+
+##### Warehouse Service [Blueprint][apache aries osgi blueprint]
+TODO
+
+##### Warehouse Service [JPA Persistence Descriptor]
+TODO
+
+##### Warehouse Service [POM][apache maven pom]
+TODO
 
 #### Warehouse Features
+Such as the [Event Bus Features] module also the Warehouse Feature module contains only the `feature.xml`.  
+
+![Warehouse Features Structure](/images/warehousefeatures_structure.png)
+
+##### Warehouse Features XML
+The Warehouse application depends on two third-party applications, [PAX JDBC] and [Camel][apache camel], and on the [Event Bus].
+
+```xml
+<repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/0.8.0/xml/features</repository>
+<repository>mvn:org.apache.camel.karaf/apache-camel/2.15.2/xml/features</repository>
+<repository>mvn:it.ninjatech.karaf-activemq-camel-cxf-jpa-tutorial/event-bus-features/1.0.0/xml/features</repository>
+```
+
+The feature defined is just warehouse-service
+```xml
+<feature name="warehouse-service" version="${pom.version}">
+    <feature>jndi</feature>
+    <feature>jdbc</feature>
+    <feature version="2.0.0">jpa</feature>
+    <feature version="2.3.0">openjpa</feature>
+    <feature>pax-jdbc-spec</feature>
+    <feature>pax-jdbc-config</feature>
+    <feature>pax-jdbc-h2</feature>
+    <feature>pax-jdbc-pool-dbcp2</feature>
+    <feature>camel</feature>
+    <feature>camel-core</feature>
+    <feature>camel-blueprint</feature>
+    <feature>camel-cxf</feature>
+    <feature>cxf</feature>
+    <feature>event-bus-client</feature>
+    <bundle>mvn:${groupId}/warehouse-service/${pom.version}</bundle>
+    <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
+    <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
+    <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+    <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson.version}</bundle>
+    <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
+</feature>
+```
+The service depends on third-party features and is composed by six bundles: one is the real warehouse-service and the other five are [Jackson] bundles (as [Jackson] project doesn't have a features repository it is needed to import the bundles by hand).
+
+---
+Following is the content of the `features.xml` file
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="warehouse-${pom.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
+    <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/0.8.0/xml/features</repository>
+    <repository>mvn:org.apache.camel.karaf/apache-camel/2.15.2/xml/features</repository>
+    <repository>mvn:it.ninjatech.karaf-activemq-camel-cxf-jpa-tutorial/event-bus-features/1.0.0/xml/features</repository>
+
+    <feature name="warehouse-service" version="${pom.version}">
+        <feature>jndi</feature>
+        <feature>jdbc</feature>
+        <feature version="2.0.0">jpa</feature>
+        <feature version="2.3.0">openjpa</feature>
+        <feature>pax-jdbc-spec</feature>
+        <feature>pax-jdbc-config</feature>
+        <feature>pax-jdbc-h2</feature>
+        <feature>pax-jdbc-pool-dbcp2</feature>
+        <feature>camel</feature>
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-cxf</feature>
+        <feature>cxf</feature>
+        <feature>event-bus-client</feature>
+        <bundle>mvn:${groupId}/warehouse-service/${pom.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-core/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-databind/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson.version}</bundle>
+        <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson.version}</bundle>
+    </feature>
+    
+</features>
+```
 
 ## Deploy
+TODO
 
 ## Test
+TODO
 
 ## License
 Released and distributed under the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
@@ -898,6 +1007,7 @@ Released and distributed under the [Apache License Version 2.0](http://www.apach
 [pojo]: https://en.wikipedia.org/wiki/Plain_Old_Java_Object
 [publish/subscribe]: https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
 
+[event bus]: #event-bus
 [event bus client]: #event-bus-client
 [event bus client blueprint camel section]: #event-bus-client-blueprint-camel-section
 [event bus client blueprint configuration section]: #event-bus-client-blueprint-configuration-section
