@@ -37,7 +37,8 @@ C:\Tools\h2\bin\java -cp "h2-1.3.176.jar;%H2DRIVERS%;%CLASSPATH%" org.h2.tools.S
 To manage the DB I used [SQLWorkbench].
 
 Let's start to manage the Event Bus DB. 
-The connection URL is `jdbc:h2:~/event_bus;AUTO_SERVER=TRUE` and the user is `sa` with blank password.
+The connection URL is `jdbc:h2:~/event_bus;AUTO_SERVER=TRUE` and the user is `sa` with blank password.  
+
 ![SQLWorkbench Event Bus Connection](/images/sqlworkbench_eventbus_connection.png)
 
 The Event Bus DB has just one table, `event_bus_journal`, where will be stored the events handled by the bus.
@@ -52,10 +53,12 @@ CREATE TABLE event_bus_journal (
 );
 ```
 As there is an _IDENTITY_ column, the DBMS will create a sequence used to automatically fill it.  
+
 ![SQLWorkbench Event Bus Schema](/images/sqlworkbench_eventbus_schema.png)
 
 Then let's manage the Warehouse DB.
 The connection URL is `jdbc:h2:~/warehouse;AUTO_SERVER=TRUE` and the user is `sa` with blank password.  
+
 ![SQLWorkbench Warehouse Connection](/images/sqlworkbench_warehouse_connection.png)
 
 The Warehouse DB has one table, `product`, which will contain the warehouse products and a sequence, `product_sequence`, used to manage the product ID.
@@ -80,6 +83,7 @@ activemq.bat start
 ![ActiveMQ Shell](/images/activemq_shell.png)
 
 After the service has started, it's possible to access to the console using the browser and accessing to the URL `http://localhost:8161`  
+
 ![ActiveMQ Console](/images/activemq_console.png)
 
 ### [Apache Karaf]
@@ -107,6 +111,7 @@ In an enterprise system the [Server][event bus server] module could be deployed 
 In order to explain the integration between [ActiveMQ][apache activemq], [Camel][apache camel] and [JPA], each event will be dequeued and stored in the database by [Camel][apache camel] using its [ActiveMQ][apache camel activemq component] and [JPA][apache camel jpa component] components.
 
 The maven project is structured with a parent module (EventBus) and four children modules (Model, Server, Client and Features).  
+
 ![Event Bus Structure](/images/eventbus_structure.png)
 
 The EventBus POM contains the [Apache Felix Bundle Plugin] needed to create the bundles.
@@ -128,6 +133,7 @@ The EventBus POM contains the [Apache Felix Bundle Plugin] needed to create the 
 
 #### Event Bus Model
 The Event Bus Model module contains the data model classes needed by both the [Server][event bus server] and [Client][event bus client] modules and the configuration for [JPA].  
+
 ![Event Bus Model Structure](/images/eventbusmodel_structure.png)
 
 ##### Event Bus Model Code
@@ -214,6 +220,7 @@ Tool: Bnd-1.50.0
 
 #### Event Bus Server
 The Event Bus Server module is the subscriber of the Event Bus system: each time an event is enqueued the Server dequeues and stores it into the database. **This module uses [Camel][apache camel] to connect to [ActiveMQ][apache activemq] and to store the event into the database via [JPA]**.  
+
 ![Event Bus Server Structure](/images/eventbusserver_structure.png)
 
 ##### Event Bus Server Code
@@ -459,6 +466,7 @@ Tool: Bnd-1.50.0
 
 #### Event Bus Client
 The Event Bus Client module is the publisher of the Event Bus system: it's used by one or more applications that need to generate events. **This module uses [Camel][apache camel] to connect to [ActiveMQ][apache activemq]**.  
+
 ![Event Bus Client Structure](/images/eventbusclient_structure.png)
 
 
@@ -672,6 +680,147 @@ Tool: Bnd-1.50.0
 ```
 
 #### Event Bus Features
+The Event Bus Features module contains only the `feature.xml` file needed by [Karaf][apache karaf] to install the modules (see [Apache Karaf Features] for more info).  
+
+![Event Bus Features Structure](/images/eventbusfeatures_structure.png)
+
+##### Event Bus Features XML
+In the `features.xml` file are listed the dependencies and the modules - called features - of the application.
+
+First of there is the list of the repositories that contain the third-party features needed by the application
+```xml
+<repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/0.8.0/xml/features</repository>
+<repository>mvn:org.apache.camel.karaf/apache-camel/2.15.2/xml/features</repository>
+<repository>mvn:org.apache.activemq/activemq-karaf/5.11.1/xml/features</repository>
+```
+In this case the application depends on [PAX JDBC] whis is an OSGi [JDBC] Service Implementation, [Camel][apache camel] and [ActiveMQ][apache activemq].
+
+Then there are the features definition:
+
+- event-bus-model
+- event-bus-server
+- event-bus-client
+
+Following is the feature definition of the event-bus-model
+```xml
+<feature name="event-bus-model" version="${pom.version}">
+    <feature>jndi</feature>
+    <feature>jdbc</feature>
+    <feature version="2.0.0">jpa</feature>
+    <feature version="2.3.0">openjpa</feature>
+    <feature>pax-jdbc-spec</feature>
+    <feature>pax-jdbc-config</feature>
+    <feature>pax-jdbc-h2</feature>
+    <feature>pax-jdbc-pool-dbcp2</feature>
+    <bundle>mvn:${groupId}/event-bus-model/${pom.version}</bundle>
+</feature>
+```
+The event-bus-model depends on other features (all third-party features) and is composed of a bundle that will be retrieved from the [Maven][apache maven] repository.
+
+Following is the feature definition of the event-bus-server
+```xml
+<feature name="event-bus-server" version="${pom.version}">
+        <feature>camel</feature>
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-jpa</feature>
+        <feature>camel-jms</feature>
+        <feature>activemq-client</feature>
+        <feature>activemq-camel</feature>
+        <feature>event-bus-model</feature>
+        <bundle>mvn:${groupId}/event-bus-server/${pom.version}</bundle>
+        <config name="it.ninjatech.eventbus">
+            jmsUrl = tcp://localhost:61616
+            jmsQueueId = event-bus
+        </config>
+    </feature>
+```
+In this case, beyond the dependencies it depends on (note that there is the event-bus-model feature too) and the bundle is composed of, there is the definition of the configuration that will be installed into the [Karaf][apache karaf] `etc` directory and will have the PID specified by the `name` attribute and the two properties `jmsUrl` and `jmsQueuedId`.
+
+The event-bus-client feature is like the event-bus-server feature.
+
+---
+Following is the content of the `features.xml` file
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="event-bus-${pom.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
+    <repository>mvn:org.ops4j.pax.jdbc/pax-jdbc-features/0.8.0/xml/features</repository>
+    <repository>mvn:org.apache.camel.karaf/apache-camel/2.15.2/xml/features</repository>
+    <repository>mvn:org.apache.activemq/activemq-karaf/5.11.1/xml/features</repository>
+
+    <feature name="event-bus-model" version="${pom.version}">
+        <feature>jndi</feature>
+        <feature>jdbc</feature>
+        <feature version="2.0.0">jpa</feature>
+        <feature version="2.3.0">openjpa</feature>
+        <feature>pax-jdbc-spec</feature>
+        <feature>pax-jdbc-config</feature>
+        <feature>pax-jdbc-h2</feature>
+        <feature>pax-jdbc-pool-dbcp2</feature>
+        <bundle>mvn:${groupId}/event-bus-model/${pom.version}</bundle>
+    </feature>
+
+    <feature name="event-bus-server" version="${pom.version}">
+        <feature>camel</feature>
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-jpa</feature>
+        <feature>camel-jms</feature>
+        <feature>activemq-client</feature>
+        <feature>activemq-camel</feature>
+        <feature>event-bus-model</feature>
+        <bundle>mvn:${groupId}/event-bus-server/${pom.version}</bundle>
+        <config name="it.ninjatech.eventbus">
+        	jmsUrl = tcp://localhost:61616
+			jmsQueueId = event-bus
+        </config>
+    </feature>
+
+    <feature name="event-bus-client" version="${pom.version}">
+        <feature>camel</feature>
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-jms</feature>
+        <feature>activemq-client</feature>
+        <feature>activemq-camel</feature>
+        <feature>event-bus-model</feature>
+        <bundle>mvn:${groupId}/event-bus-client/${pom.version}</bundle>
+        <config name="it.ninjatech.eventbus">
+        	jmsUrl = tcp://localhost:61616
+			jmsQueueId = event-bus
+        </config>
+    </feature>
+   
+</features>
+```
+
+##### Event Bus Features [POM][apache maven pom]
+The module is packed as POM and uses the [Maven Build Helper Plugin][mojohaus build helper maven plugin] to attach the `feature.xml` file
+```xml
+<plugin>
+	<groupId>org.codehaus.mojo</groupId>
+	<artifactId>build-helper-maven-plugin</artifactId>
+	<executions>
+		<execution>
+			<id>attach-artifacts</id>
+			<phase>package</phase>
+			<goals>
+				<goal>attach-artifact</goal>
+			</goals>
+			<configuration>
+				<artifacts>
+					<artifact>
+						<file>target/classes/features.xml</file>
+						<type>xml</type>
+						<classifier>features</classifier>
+					</artifact>
+				</artifacts>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+```
+The file name has to have the form `<artifactId>-<version>-features.xml`. In order to add the `features` suffix is used the `classifier` tag.
 
 ### Warehouse
 
@@ -687,6 +836,26 @@ Tool: Bnd-1.50.0
 Released and distributed under the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 ## References
+[Apache ActiveMQ]  
+[Apache Aries JPA]  
+[Apache Aries OSGi Blueprint]  
+[Apache Camel]  
+[Apache CXF]  
+[Apache Felix Bundle Plugin]  
+[Apache Karaf]  
+[Apache Maven]  
+[Apache OpenJPA]  
+[H2]  
+[Jackson]  
+[JDBC]  
+[JMS]  
+[JNDI]  
+[JPA]  
+[JTA]  
+[OSGi]  
+[PAX JDBC]  
+[SQLWorkbench]  
+
 [Schneider Karaf Tutorial](https://github.com/cschneider/Karaf-Tutorial)  
 [Karaf Tutorial - Using the Configuration Admin Service](http://www.liquid-reality.de/display/liquid/2011/09/23/Karaf+Tutorial+Part+2+-+Using+the+Configuration+Admin+Service)
 
@@ -707,18 +876,23 @@ Released and distributed under the [Apache License Version 2.0](http://www.apach
 [apache felix bundle plugin]: http://felix.apache.org/documentation/subprojects/apache-felix-maven-bundle-plugin-bnd.html
 [apache karaf]: http://karaf.apache.org/
 [apache karaf configuration admin service]: https://karaf.apache.org/manual/latest/users-guide/configuration.html
+[apache karaf features]: https://karaf.apache.org/manual/latest/users-guide/provisioning.html
 [apache karaf user guide]: https://karaf.apache.org/manual/latest/users-guide/
+[apache maven]: https://maven.apache.org/
 [apache maven pom]: https://maven.apache.org/pom.html
 [apache openjpa]: http://openjpa.apache.org/
 [h2]: http://www.h2database.com/html/main.html
 [h2 installation]: http://www.h2database.com/html/installation.html
 [jackson]: https://github.com/FasterXML/jackson
+[jdbc]: http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 [jms]: http://docs.oracle.com/javaee/6/tutorial/doc/bncdq.html
 [jndi]: http://www.oracle.com/technetwork/java/jndi/index.html
 [jpa]: http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html
 [jpa persistence descriptor]: http://docs.oracle.com/cd/E16439_01/doc.1013/e13981/cfgdepds005.htm
 [jta]: http://www.oracle.com/technetwork/java/javaee/jta/index.html
+[mojohaus build helper maven plugin]: http://www.mojohaus.org/build-helper-maven-plugin/index.html
 [osgi]: https://www.osgi.org/
+[pax jdbc]: https://github.com/ops4j/org.ops4j.pax.jdbc
 [sqlworkbench]: http://www.sql-workbench.net/index.html
 
 [pojo]: https://en.wikipedia.org/wiki/Plain_Old_Java_Object
