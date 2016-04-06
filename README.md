@@ -61,7 +61,7 @@ The connection URL is `jdbc:h2:~/warehouse;AUTO_SERVER=TRUE` and the user is `sa
 
 ![SQLWorkbench Warehouse Connection](/images/sqlworkbench_warehouse_connection.png)
 
-The Warehouse DB has one table, `product`, which will contain the warehouse products and a sequence, `product_sequence`, used to manage the product ID.
+The Warehouse DB has one table, `product`, which will contain the warehouse products and a sequence, `product_sequence`, used to generate the product ID.
 The scripts are
 ```sql
 CREATE TABLE product (
@@ -114,7 +114,7 @@ The [maven][apache maven] project is structured with a parent module (EventBus) 
 
 ![Event Bus Structure](/images/eventbus_structure.png)
 
-The EventBus [POM][apache pom] contains the [Apache Felix Bundle Plugin] needed to create the bundles.
+The EventBus [POM][apache maven pom] contains the [Apache Felix Bundle Plugin] needed to create the bundles.
 ```xml
 <pluginManagement>
 	<plugins>
@@ -137,7 +137,7 @@ The Event Bus Model module contains the data model classes needed by both the [S
 ![Event Bus Model Structure](/images/eventbusmodel_structure.png)
 
 ##### Event Bus Model Code
-The data model is composed of only one class:`Event`. It's a serializable [POJO] containing four fields annotated with [JPA] annotations.
+The data model contains only one class:`Event`. It's a serializable [POJO] containing four fields annotated with [JPA] annotations.
 ```java
 @Entity
 @Table(name = "event_bus_journal")
@@ -219,7 +219,7 @@ Tool: Bnd-1.50.0
 ```
 
 #### Event Bus Server
-The Event Bus Server module is the subscriber of the Event Bus system: each time an event is enqueued the Server dequeues and stores it into the database. **This module uses [Camel][apache camel] to connect to [ActiveMQ][apache activemq] and to store the event into the database via [JPA]**.  
+The Event Bus Server module is the subscriber of the Event Bus system: each time an event is enqueued, the Server dequeues and stores it into the database. **This module uses [Camel][apache camel] to connect to [ActiveMQ][apache activemq] and to store the event into the database via [JPA]**.  
 
 ![Event Bus Server Structure](/images/eventbusserver_structure.png)
 
