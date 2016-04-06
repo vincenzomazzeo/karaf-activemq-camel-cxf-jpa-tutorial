@@ -132,7 +132,7 @@ The EventBus [POM][apache pom] contains the [Apache Felix Bundle Plugin] needed 
 ```
 
 #### Event Bus Model
-The Event Bus Model module contains the data model classes needed by both the [Server][event bus server] and [Client][event bus client] modules and the configuration for [JPA].  
+The Event Bus Model module contains the data model classes needed by both the [Server][event bus server] and [Client][event bus client] modules and the [JPA] configuration.  
 
 ![Event Bus Model Structure](/images/eventbusmodel_structure.png)
 
@@ -629,7 +629,7 @@ Following is the complete content of the blueprint file
 </blueprint>
 ```
 
-##### [POM][apache maven pom]
+##### Event Bus Client [POM][apache maven pom]
 The Event Bus Client module has to be packed as bundle so the [POM][apache maven pom] contains
 ```xml
 <packaging>bundle</packaging>
@@ -843,7 +843,7 @@ Such as the [Event Bus] project also the Warehouse [POM][apache maven pom] conta
 ```
 
 #### Warehouse Service
-The Warehouse Service module contains the data model classes, the REST endpoints, the Business Logic and the configuration for [JPA] needed to handle the warehouse.  
+The Warehouse Service module contains the data model classes, the REST endpoints, the Business Logic and the [JPA] configuration needed to handle the warehouse.  
 
 ![Warehouse Service Structure](/images/warehouseservice_structure.png)
 
@@ -873,7 +873,7 @@ The Warehouse application depends on two third-party applications, [PAX JDBC] an
 <repository>mvn:it.ninjatech.karaf-activemq-camel-cxf-jpa-tutorial/event-bus-features/1.0.0/xml/features</repository>
 ```
 
-The feature defined is just warehouse-service
+Only the warehouse-service feature is defined
 ```xml
 <feature name="warehouse-service" version="${pom.version}">
     <feature>jndi</feature>
