@@ -82,7 +82,7 @@ activemq.bat start
 ```
 ![ActiveMQ Shell](/images/activemq_shell.png)
 
-After the service has started, it's possible to access to the console using the browser and accessing to the URL `http://localhost:8161`  
+After the service has started, it's possible to access the console using the browser and accessing to the URL `http://localhost:8161`  
 
 ![ActiveMQ Console](/images/activemq_console.png)
 
@@ -199,11 +199,11 @@ and the configuration for the [bundle plugin][apache felix bundle plugin]
 The `Meta-Persistence` tag tells the plugin to include the `Meta-Persistence` property in the manifest in order to notify [Apache Aries JPA] - a framework that allows to use container managed persistence in [OSGi] - where to find the [JPA persistence descriptor] . The following is the content of the `MANIFEST.MF` file after the package phase:
 ```
 Manifest-Version: 1.0
-Bnd-LastModified: 1459439698425
+Bnd-LastModified: 1460012189813
 Build-Jdk: 1.7.0_79
 Built-By: vincenzo.mazzeo
 Bundle-DocURL: www.ninjatech.it
-Bundle-License: []
+Bundle-License: [org.apache.maven.model.License@3dcf5b66]
 Bundle-ManifestVersion: 2
 Bundle-Name: [Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Event B
  us Model
@@ -438,11 +438,11 @@ and the configuration for the [bundle plugin][apache felix bundle plugin]
 The following is the content of the `MANIFEST.MF` file after the package phase:
 ```
 Manifest-Version: 1.0
-Bnd-LastModified: 1459439700118
+Bnd-LastModified: 1460012191542
 Build-Jdk: 1.7.0_79
 Built-By: vincenzo.mazzeo
 Bundle-DocURL: www.ninjatech.it
-Bundle-License: []
+Bundle-License: [org.apache.maven.model.License@7acb37ee]
 Bundle-ManifestVersion: 2
 Bundle-Name: [Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Event B
  us Server
@@ -655,11 +655,11 @@ and the configuration for the [bundle plugin][apache felix bundle plugin]
 The following is the content of the `MANIFEST.MF` file after the package phase:
 ```
 Manifest-Version: 1.0
-Bnd-LastModified: 1459439700719
+Bnd-LastModified: 1460012192108
 Build-Jdk: 1.7.0_79
 Built-By: vincenzo.mazzeo
 Bundle-DocURL: www.ninjatech.it
-Bundle-License: []
+Bundle-License: [org.apache.maven.model.License@37c0ef0c]
 Bundle-ManifestVersion: 2
 Bundle-Name: [Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Event B
  us Client
