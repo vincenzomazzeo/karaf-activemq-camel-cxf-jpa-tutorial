@@ -17,7 +17,7 @@ The [JPA] implementation used is [Apache OpenJPA] version 2.3.0.
 The Java version used is 1.7.0_79.  
 The DBMS used is [H2] version 1.3.176 (2014-04-05).  
 The tool used to query the DB is [SQLWorkbench] build 119 (2016-01-31).  
-The REST client used is Advanced Rest Client Application for Chrome version 4.12.8 Stable.
+The [REST] client used is Advanced Rest Client Application for Chrome version 4.12.8 Stable.
 
 ## Overview
 In the last times I used [Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apache CXF] and [JPA] in order to build enterprise systems and many times I faced with integration problems. Fortunately Internet helped me to get out of these problems but often the tutorials/documentations found were about _HelloWorld_ examples. So I decided to write a tutorial (this tutorial) to describe how to integrate all of these technologies designing and implementing a complete enterprise system even if simple.
@@ -806,7 +806,7 @@ The module is packed as POM and uses the [Maven Build Helper Plugin][mojohaus bu
 The file name has to have the form `<artifactId>-<version>-features.xml`. In order to add the `features` suffix is used the `classifier` tag.
 
 ### Warehouse
-The Warehouse is a REST application used to handle a warehouse inventory.
+The Warehouse is a [REST] web application used to handle a warehouse inventory.
 
 The [maven][apache maven] project is structured with a parent module (Warehouse) and two children modules (Service and Features).  
 
@@ -826,7 +826,7 @@ Such as the [Event Bus] project also the Warehouse [POM][apache maven pom] conta
 ```
 
 #### Warehouse Service
-The Warehouse Service module contains the data model classes, the REST endpoints, the Business Logic and the [JPA] configuration needed to handle the warehouse.  
+The Warehouse Service module contains the data model classes, the [REST] endpoints, the Business Logic and the [JPA] configuration needed to handle the warehouse.  
 
 ![Warehouse Service Structure](/images/warehouseservice_structure.png)
 
@@ -857,7 +857,7 @@ In the bean section I initialize the `EventHandler` needed by [Camel][apache cam
 ```
 
 ###### Warehouse Service [Blueprint][apache aries osgi blueprint] [JPA] Section
-In the [JPA] section I initialize the [DAO] of the products
+In the [JPA] section I initialize the [DAO] of the products passing the Entity Manager - handled by the [Aries][apache aries jpa] framework - and configuring the transaction policy (in order to use the `transaction` tag I had to import the namespace `http://aries.apache.org/xmlns/transactions/v1.0.0`)
 ```xml
 <bean id="productDao" class="it.ninjatech.warehouse.dao.ProductDao">
 	<jpa:context unitname="warehouse_pu" property="entityManager"/>
@@ -866,7 +866,7 @@ In the [JPA] section I initialize the [DAO] of the products
 ```
 
 ###### Warehouse Service [Blueprint][apache aries osgi blueprint] [CXF][apache cxf] Section
-In the [CXF][apache cxf] section I configure the REST server.  
+In the [CXF][apache cxf] section I configure the [REST] server.  
 I will initiate the [CXF][apache cxf] `WadlGenerator` that will automatically generate the [WADL] of the endpoints
 ```xml
 <bean id="wadlGenerator" class="org.apache.cxf.jaxrs.model.wadl.WadlGenerator" />
@@ -875,7 +875,7 @@ and the `JacksonJsonProvider` that will be used by [CXF][apache cxf] to marshal/
 ```xml	
 <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
 ```
-At the end there is the REST server configuration
+At the end there is the [REST] server configuration
 ```xml
 <cxf:rsServer id="warehouseRs" address="http://0.0.0.0:9191/warehouse" serviceClass="it.ninjatech.warehouse.rs.WarehouseService">
 	<cxf:providers>
@@ -907,9 +907,8 @@ Finally I initiate the [Context][apache camel context]
 Following is the complete content of the `blueprint.xml` file
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0" xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0" xmlns:camel="http://camel.apache.org/schema/blueprint" xmlns:cxf="http://camel.apache.org/schema/blueprint/cxf" xsi:schemaLocation="
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0" xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0" xmlns:camel="http://camel.apache.org/schema/blueprint" xmlns:cxf="http://camel.apache.org/schema/blueprint/cxf" xsi:schemaLocation="
 		http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 		http://aries.apache.org/xmlns/transactions/v1.0.0 http://aries.apache.org/schemas/transaction/transactionv10.xsd
 		http://aries.apache.org/xmlns/jpa/v1.1.0 http://aries.apache.org/schemas/jpa/jpa_110.xsd
 		http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint-2.15.2.xsd
@@ -1168,6 +1167,7 @@ Released and distributed under the [Apache License Version 2.0](http://www.apach
 [dao]: https://en.wikipedia.org/wiki/Data_access_object
 [pojo]: https://en.wikipedia.org/wiki/Plain_Old_Java_Object
 [publish/subscribe]: https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
+[rest]: https://en.wikipedia.org/wiki/Representational_state_transfer
 [wadl]: https://en.wikipedia.org/wiki/Web_Application_Description_Language
 
 [event bus]: #event-bus
