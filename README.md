@@ -196,7 +196,8 @@ and the configuration for the [bundle plugin][apache felix bundle plugin]
 	</configuration>
 </plugin>
 ```
-The `Meta-Persistence` tag tells the plugin to include the `Meta-Persistence` property in the manifest in order to notify [Apache Aries JPA] - a framework that allows to use container managed persistence in [OSGi] - where to find the [JPA persistence descriptor] . The following is the content of the `MANIFEST.MF` file after the package phase:
+The `Meta-Persistence` tag tells the plugin to include the `Meta-Persistence` property in the manifest in order to notify [Apache Aries JPA] - a framework that allows to use container managed persistence in [OSGi] - where to find the [JPA persistence descriptor].  
+The following is the content of the `MANIFEST.MF` file after the package phase:
 ```
 Manifest-Version: 1.0
 Bnd-LastModified: 1460012189813
@@ -205,14 +206,12 @@ Built-By: vincenzo.mazzeo
 Bundle-DocURL: www.ninjatech.it
 Bundle-License: [org.apache.maven.model.License@3dcf5b66]
 Bundle-ManifestVersion: 2
-Bundle-Name: [Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Event B
- us Model
+Bundle-Name: [Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Event Bus Model
 Bundle-SymbolicName: event-bus-model
 Bundle-Vendor: Ninjatech
 Bundle-Version: 1.0.0
 Created-By: Apache Maven Bundle Plugin
-Export-Package: it.ninjatech.eventbus.model;uses:="javax.persistence";ve
- rsion="1.0.0"
+Export-Package: it.ninjatech.eventbus.model;uses:="javax.persistence";version="1.0.0"
 Import-Package: javax.persistence
 Meta-Persistence: META-INF/persistence.xml
 Tool: Bnd-1.50.0
@@ -342,7 +341,7 @@ I initiate the Route Builder
 	<argument value="event_bus_pu" />
 </bean>
 ```
-passing to it the ID of the [ActiveMQ Component][apache camel activemq component], the name of the queue, the ID of the [JPA Component][apache camel jpa component] and the name of the persistence unit.
+passing the ID of the [ActiveMQ Component][apache camel activemq component], the name of the queue, the ID of the [JPA Component][apache camel jpa component] and the name of the persistence unit.
 
 Finally I initiate the [Context][apache camel context]
 ```xml
@@ -351,7 +350,7 @@ Finally I initiate the [Context][apache camel context]
 </camel:camelContext>
 ```
 ---
-Following is the complete content of the blueprint file
+Following is the complete content of the `blueprint.xml` file
 ```xml
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0" xmlns:camel="http://camel.apache.org/schema/blueprint"
 	xsi:schemaLocation="
@@ -444,22 +443,13 @@ Built-By: vincenzo.mazzeo
 Bundle-DocURL: www.ninjatech.it
 Bundle-License: [org.apache.maven.model.License@7acb37ee]
 Bundle-ManifestVersion: 2
-Bundle-Name: [Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Event B
- us Server
+Bundle-Name: [Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Event Bus Server
 Bundle-SymbolicName: event-bus-server
 Bundle-Vendor: Ninjatech
 Bundle-Version: 1.0.0
 Created-By: Apache Maven Bundle Plugin
-Export-Package: it.ninjatech.eventbus.server;uses:="it.ninjatech.eventbu
- s.model";version="1.0.0",it.ninjatech.eventbus.server.route;uses:="org.
- apache.camel.builder,org.apache.camel.model,it.ninjatech.eventbus.serve
- r";version="1.0.0"
-Import-Package: it.ninjatech.eventbus.model;version="[1.0,2)",javax.pers
- istence,javax.transaction,org.apache.activemq,org.apache.activemq.camel
- .component,org.apache.activemq.pool,org.apache.camel.builder;version="[
- 2.15,3)",org.apache.camel.component.jms,org.apache.camel.component.jpa,
- org.apache.camel.model;version="[2.15,3)",org.osgi.service.blueprint;ve
- rsion="[1.0.0,2.0.0)",org.springframework.transaction.jta
+Export-Package: it.ninjatech.eventbus.server;uses:="it.ninjatech.eventbus.model";version="1.0.0",it.ninjatech.eventbus.server.route;uses:="org.apache.camel.builder,org.apache.camel.model,it.ninjatech.eventbus.server";version="1.0.0"
+Import-Package: it.ninjatech.eventbus.model;version="[1.0,2)",javax.persistence,javax.transaction,org.apache.activemq,org.apache.activemq.camel.component,org.apache.activemq.pool,org.apache.camel.builder;version="[2.15,3)",org.apache.camel.component.jms,org.apache.camel.component.jpa,org.apache.camel.model;version="[2.15,3)",org.osgi.service.blueprint;version="[1.0.0,2.0.0)",org.springframework.transaction.jta
 Import-Service: javax.transaction.TransactionManager;multiple:=false
 Tool: Bnd-1.50.0
 ```
@@ -572,7 +562,7 @@ In the service section I export the service so that could be used by the applica
 > Note that the [Camel Context][apache camel context] and the ID of the [Camel ProducerTemplate][apache camel producer template] are passed to the `ProviderEventBusClientService` constructor.
 
 ---
-Following is the complete content of the blueprint file
+Following is the complete content of the `blueprint.xml` file
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:camel="http://camel.apache.org/schema/blueprint"
@@ -661,21 +651,14 @@ Built-By: vincenzo.mazzeo
 Bundle-DocURL: www.ninjatech.it
 Bundle-License: [org.apache.maven.model.License@37c0ef0c]
 Bundle-ManifestVersion: 2
-Bundle-Name: [Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Event B
- us Client
+Bundle-Name: [Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Event Bus Client
 Bundle-SymbolicName: event-bus-client
 Bundle-Vendor: Ninjatech
 Bundle-Version: 1.0.0
 Created-By: Apache Maven Bundle Plugin
-Export-Package: it.ninjatech.eventbus.client;uses:="org.apache.camel,it.
- ninjatech.eventbus.model,org.apache.camel.spi";version="1.0.0"
+Export-Package: it.ninjatech.eventbus.client;uses:="org.apache.camel,it.ninjatech.eventbus.model,org.apache.camel.spi";version="1.0.0"
 Export-Service: it.ninjatech.eventbus.client.EventBusClientService
-Import-Package: it.ninjatech.eventbus.model;version="[1.0,2)",org.apache
- .activemq,org.apache.activemq.camel.component,org.apache.activemq.pool,
- org.apache.camel;version="[2.15,3)",org.apache.camel.builder;version="[
- 2.15,3)",org.apache.camel.component.jms,org.apache.camel.model;version=
- "[2.15,3)",org.apache.camel.spi;version="[2.15,3)",org.osgi.service.blu
- eprint;version="[1.0.0,2.0.0)"
+Import-Package: it.ninjatech.eventbus.model;version="[1.0,2)",org.apache.activemq,org.apache.activemq.camel.component,org.apache.activemq.pool,org.apache.camel;version="[2.15,3)",org.apache.camel.builder;version="[2.15,3)",org.apache.camel.component.jms,org.apache.camel.model;version="[2.15,3)",org.apache.camel.spi;version="[2.15,3)",org.osgi.service.blueprint;version="[1.0.0,2.0.0)"
 Tool: Bnd-1.50.0
 ```
 
@@ -740,7 +723,7 @@ In this case, beyond the dependencies it depends on (note that there is the even
 The event-bus-client feature is like the event-bus-server feature.
 
 ---
-Following is the content of the `features.xml` file
+Following is the complete content of the `features.xml` file
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="event-bus-${pom.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
@@ -851,13 +834,189 @@ The Warehouse Service module contains the data model classes, the REST endpoints
 TODO
 
 ##### Warehouse Service [Blueprint][apache aries osgi blueprint]
-TODO
+The Warehouse Service blueprint can be, ideally, divided into five sections:
+
+1. [Service section][warehouse service blueprint service section]
+2. [Bean section][warehouse service blueprint bean section]
+3. [JPA section][warehouse service blueprint jpa section];
+4. [CXF section][warehouse service blueprint cxf section];
+5. [Camel section][warehouse service blueprint camel section];
+
+###### Warehouse Service [Blueprint][apache aries osgi blueprint] Service Section
+In the service section I import the [Event Bus Client] service that will be used to publish the events
+```xml
+<reference id="eventBusClientService" timeout="0" interface="it.ninjatech.eventbus.client.EventBusClientService" />
+```
+
+###### Warehouse Service [Blueprint][apache aries osgi blueprint] Bean Section
+In the bean section I initialize the `EventHandler` needed by [Camel][apache camel] to build the route
+```xml
+<bean id="eventHandler" class="it.ninjatech.warehouse.EventHandler">
+	<argument ref="eventBusClientService" />
+</bean>
+```
+
+###### Warehouse Service [Blueprint][apache aries osgi blueprint] [JPA] Section
+In the [JPA] section I initialize the [DAO] of the products
+```xml
+<bean id="productDao" class="it.ninjatech.warehouse.dao.ProductDao">
+	<jpa:context unitname="warehouse_pu" property="entityManager"/>
+	<tx:transaction method="*" value="Required"/>
+</bean>
+```
+
+###### Warehouse Service [Blueprint][apache aries osgi blueprint] [CXF][apache cxf] Section
+In the [CXF][apache cxf] section I configure the REST server.  
+I will initiate the [CXF][apache cxf] `WadlGenerator` that will automatically generate the [WADL] of the endpoints
+```xml
+<bean id="wadlGenerator" class="org.apache.cxf.jaxrs.model.wadl.WadlGenerator" />
+```
+and the `JacksonJsonProvider` that will be used by [CXF][apache cxf] to marshal/unmarshal the [JSON] objects
+```xml	
+<bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+```
+At the end there is the REST server configuration
+```xml
+<cxf:rsServer id="warehouseRs" address="http://0.0.0.0:9191/warehouse" serviceClass="it.ninjatech.warehouse.rs.WarehouseService">
+	<cxf:providers>
+		<ref component-id="wadlGenerator" />
+		<ref component-id="jsonProvider" />
+	</cxf:providers>
+</cxf:rsServer>
+```
+
+###### Warehouse Service [Blueprint][apache aries osgi blueprint] [Camel][apache camel] Section
+In the [Camel][apache camel] section I initiate the route builder
+```xml
+<bean id="camelWarehouseRouteBuilder" class="it.ninjatech.warehouse.route.WarehouseRouteBuilder">
+	<argument value="warehouseRs" />
+	<argument value="productDao" />
+	<argument value="eventHandler" />
+</bean>
+```
+passing the [CXF][apache cxf] Server ID, the [DAO] ID and the Event Handler ID.
+
+Finally I initiate the [Context][apache camel context]
+```xml
+<camel:camelContext id="warehouseCamel">
+	<camel:routeBuilder ref="camelWarehouseRouteBuilder" />
+</camel:camelContext>
+```
+
+---
+Following is the complete content of the `blueprint.xml` file
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.1.0" xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0" xmlns:camel="http://camel.apache.org/schema/blueprint" xmlns:cxf="http://camel.apache.org/schema/blueprint/cxf" xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/xmlns/transactions/v1.0.0 http://aries.apache.org/schemas/transaction/transactionv10.xsd
+		http://aries.apache.org/xmlns/jpa/v1.1.0 http://aries.apache.org/schemas/jpa/jpa_110.xsd
+		http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint-2.15.2.xsd
+		http://camel.apache.org/schema/blueprint/cxf http://camel.apache.org/schema/cxf/camel-cxf-2.15.2-blueprint.xsd
+	" default-activation="eager">
+
+	<!-- Event Bus Client Service -->
+	<reference id="eventBusClientService" timeout="0" interface="it.ninjatech.eventbus.client.EventBusClientService" />
+
+	<!-- Event Handler -->
+	<bean id="eventHandler" class="it.ninjatech.warehouse.EventHandler">
+		<argument ref="eventBusClientService" />
+	</bean>
+
+	<!-- DAO -->
+	<bean id="productDao" class="it.ninjatech.warehouse.dao.ProductDao">
+		<jpa:context unitname="warehouse_pu" property="entityManager"/>
+		<tx:transaction method="*" value="Required"/>
+	</bean>
+
+	<!-- CXF -->
+	<bean id="wadlGenerator" class="org.apache.cxf.jaxrs.model.wadl.WadlGenerator" />
+	
+	<bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+	
+	<cxf:rsServer id="warehouseRs" address="http://0.0.0.0:9191/warehouse" serviceClass="it.ninjatech.warehouse.rs.WarehouseService">
+		<cxf:providers>
+			<ref component-id="wadlGenerator" />
+			<ref component-id="jsonProvider" />
+		</cxf:providers>
+	</cxf:rsServer>
+
+	<!-- Camel RouteBuilder -->
+	<bean id="camelWarehouseRouteBuilder" class="it.ninjatech.warehouse.route.WarehouseRouteBuilder">
+		<argument value="warehouseRs" />
+		<argument value="productDao" />
+		<argument value="eventHandler" />
+	</bean>
+
+	<!-- Camel -->
+	<camel:camelContext id="warehouseCamel">
+		<camel:routeBuilder ref="camelWarehouseRouteBuilder" />
+	</camel:camelContext>
+
+</blueprint>
+```
 
 ##### Warehouse Service [JPA Persistence Descriptor]
-TODO
+The [JPA persistence descriptor] (`persistence.xml`) contains one persistence unit called `warehouse_pu`. Also in this case the transactions will be handled by [Karaf][apache karaf] and the datasource, called `warehouse_ds`, is bound through [JNDI].
+```xml
+<persistence-unit name="warehouse_pu" transaction-type="JTA">
+	<provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+	<jta-data-source>osgi:service/warehouse_ds</jta-data-source>
+	<class>it.ninjatech.warehouse.model.Product</class>
+	<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+	<properties>
+		<property name="openjpa.Log" value="DefaultLevel=INFO, Tool=INFO" />
+		<!--property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)" /-->
+	</properties>
+</persistence-unit>
+```
 
 ##### Warehouse Service [POM][apache maven pom]
-TODO
+The Warehouse Service module has to be packed as bundle therefore the [POM][apache maven pom] contains
+```xml
+<packaging>bundle</packaging>
+```
+and the configuration for the [bundle plugin][apache felix bundle plugin]
+```xml
+<plugin>
+	<groupId>org.apache.felix</groupId>
+	<artifactId>maven-bundle-plugin</artifactId>
+	<extensions>true</extensions>
+	<configuration>
+		<instructions>
+			<Bundle-Name>${project.name}</Bundle-Name>
+			<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+			<Bundle-License>${project.licenses}</Bundle-License>
+			<Private-Package>it.ninjatech.warehouse</Private-Package>
+			<Import-Package>*, it.ninjatech.eventbus.client</Import-Package>
+			<Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
+		</instructions>
+	</configuration>
+</plugin>
+```
+Such as the [Event Bus Model][] [bundle plugin][apache felix bundle plugin] configuration also the Warehouse Service [bundle plugin][apache felix bundle plugin] configuration has the `Meta-Persistence` tag in order to notify [Apache Aries JPA] about the presence of the [JPA persistence descriptor].  
+The following is the content of the `MANIFEST.MF` file after the package phase:
+```
+Manifest-Version: 1.0
+Bnd-LastModified: 1460012206368
+Build-Jdk: 1.7.0_79
+Built-By: vincenzo.mazzeo
+Bundle-DocURL: www.ninjatech.it
+Bundle-License: [org.apache.maven.model.License@7acb37ee]
+Bundle-ManifestVersion: 2
+Bundle-Name: [Ninjatech] Karaf/ActiveMQ/Camel/CXF/JPA Tutorial - Warehouse Service
+Bundle-SymbolicName: warehouse-service
+Bundle-Vendor: Ninjatech
+Bundle-Version: 1.0.0
+Created-By: Apache Maven Bundle Plugin
+Export-Package: it.ninjatech.warehouse;uses:="it.ninjatech.warehouse.model,it.ninjatech.eventbus.client";version="1.0.0",it.ninjatech.warehouse.dao;uses:="it.ninjatech.warehouse.model,javax.persistence";version="1.0.0",it.ninjatech.warehouse.model;uses:="com.fasterxml.jackson.annotation,javax.persistence";version="1.0.0",it.ninjatech.warehouse.route;uses:="org.apache.camel.builder,org.apache.camel.model,org.apache.camel";version="1.0.0",it.ninjatech.warehouse.rs;uses:="it.ninjatech.warehouse.model,javax.ws.rs,javax.jws,javax.xml.ws";version="1.0.0"
+Import-Package: com.fasterxml.jackson.annotation;version="[2.7,3)",com.fasterxml.jackson.jaxrs.json,it.ninjatech.eventbus.client;version="[1.0,2)",javax.jws,javax.persistence,javax.ws.rs;version="[2.0,3)",javax.xml.ws,org.apache.camel;version="[2.15,3)",org.apache.camel.builder;version="[2.15,3)",org.apache.camel.model;version="[2.15,3)",org.apache.cxf.jaxrs.model.wadl,org.osgi.service.blueprint;version="[1.0.0,2.0.0)"
+Import-Service: it.ninjatech.eventbus.client.EventBusClientService;multiple:=false
+Meta-Persistence: META-INF/persistence.xml
+Tool: Bnd-1.50.0
+```
 
 #### Warehouse Features
 Such as the [Event Bus Features] module also the Warehouse Feature module contains only the `feature.xml`.  
@@ -901,7 +1060,7 @@ Only the warehouse-service feature is defined
 The service depends on third-party features and is composed by six bundles: one is the real warehouse-service and the other five are [Jackson] bundles (as [Jackson] project doesn't have a features repository it is needed to import the bundles by hand).
 
 ---
-Following is the content of the `features.xml` file
+Following is the complete content of the `features.xml` file
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="warehouse-${pom.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.3.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.3.0 http://karaf.apache.org/xmlns/features/v1.3.0">
@@ -960,6 +1119,7 @@ Released and distributed under the [Apache License Version 2.0](http://www.apach
 [JMS][]  
 [JNDI][]  
 [JPA][]  
+[Json] []
 [JTA][]  
 [OSGi][]  
 [PAX JDBC][]  
@@ -998,14 +1158,17 @@ Released and distributed under the [Apache License Version 2.0](http://www.apach
 [jndi]: http://www.oracle.com/technetwork/java/jndi/index.html
 [jpa]: http://www.oracle.com/technetwork/java/javaee/tech/persistence-jsp-140049.html
 [jpa persistence descriptor]: http://docs.oracle.com/cd/E16439_01/doc.1013/e13981/cfgdepds005.htm
+[json]: http://www.json.org/
 [jta]: http://www.oracle.com/technetwork/java/javaee/jta/index.html
 [mojohaus build helper maven plugin]: http://www.mojohaus.org/build-helper-maven-plugin/index.html
 [osgi]: https://www.osgi.org/
 [pax jdbc]: https://github.com/ops4j/org.ops4j.pax.jdbc
 [sqlworkbench]: http://www.sql-workbench.net/index.html
 
+[dao]: https://en.wikipedia.org/wiki/Data_access_object
 [pojo]: https://en.wikipedia.org/wiki/Plain_Old_Java_Object
 [publish/subscribe]: https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern
+[wadl]: https://en.wikipedia.org/wiki/Web_Application_Description_Language
 
 [event bus]: #event-bus
 [event bus client]: #event-bus-client
@@ -1022,3 +1185,8 @@ Released and distributed under the [Apache License Version 2.0](http://www.apach
 [event bus server blueprint jms section]: #event-bus-server-blueprint-jms-section
 [event bus server blueprint jta and jpa section]: #event-bus-server-blueprint-jta-and-jpa-section
 [warehouse service]: #warehouse-service
+[warehouse service blueprint service section]: #warehouse-service-blueprint-service-section
+[warehouse service blueprint bean section]: #warehouse-service-blueprint-bean-section
+[warehouse service blueprint jpa section]: #warehouse-service-blueprint-jpa-section
+[warehouse service blueprint cxf section]: #warehouse-service-blueprint-cxf-section
+[warehouse service blueprint camel section]: #warehouse-service-blueprint-camel-section
