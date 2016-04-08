@@ -3,6 +3,8 @@ Karaf \ ActiveMQ \ Camel \ CXF \ JPA Tutorial
 
 In this tutorial I'll try to explain how to integrate [Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apache CXF] and [JPA] in order to build an Enterprise System.
 
+## Table of Contents
+
 ## Technologies
 I have used the following versions of these technologies:
 
@@ -132,7 +134,7 @@ The EventBus [POM][apache maven pom] contains the [Apache Felix Bundle Plugin] n
 ```
 
 #### Event Bus Model
-The Event Bus Model module contains the data model classes needed by both the [Server][event bus server] and [Client][event bus client] modules and the [JPA] configuration.  
+The Event Bus Model module contains the data model classes needed by both [Server][event bus server] and [Client][event bus client] modules and the [JPA] configuration.  
 
 ![Event Bus Model Structure](/images/eventbusmodel_structure.png)
 
@@ -240,7 +242,7 @@ public class EventBusServerRouteBuilder extends RouteBuilder {
 ```
 In this route, [Camel][apache camel], when a new message is enqueued, dequeues it and passes its body - the event - to the EventHandler (that set the receive timestamp) and then store the event into the database.
 
-[Camel][apache camel] uses a [Registry][apache camel registry] to retrieve the components and as I'm using [OSGi Blueprint][apache aries osgi blueprint] to initialize the [Camel Context][apache camel context] (see [Blueprint][event bus server blueprint]), every bean initialized in the same blueprint is put in the registry using its ID as key. So when the `EventBusServerRouteBuilder` is initialized, it receives the components' IDs and the other informations needed by [Camel][apache camel] to build the route.
+[Camel][apache camel] uses a [Registry][apache camel registry] to retrieve the components and since I'm using [OSGi Blueprint][apache aries osgi blueprint] to initialize the [Camel Context][apache camel context] (see [Blueprint][event bus server blueprint]), every bean initialized in the same blueprint is put in the registry using its ID as key. So when the `EventBusServerRouteBuilder` is initialized, it receives the components' IDs and the other informations needed by [Camel][apache camel] to build the route.
 ```java
 public class EventBusServerRouteBuilder extends RouteBuilder {
 
@@ -276,14 +278,14 @@ Because the Event Bus needs some configuration properties - both Server and [Cli
 jmsUrl = tcp://localhost:61616
 jmsQueueId = event-bus
 ```
-To let the blueprint access to these properties it's needed to import the namespace `http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0` and use the `property-placeholder` tag
+To let the blueprint access these properties it's needed to import the namespace `http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0` and use the `property-placeholder` tag
 ```xml
 <cm:property-placeholder id="eventBusServerProperties" persistent-id="it.ninjatech.eventbus" />
 ```
 where the value of the `persistent-id` is the _PID_ of the configuration. Then it's possible to refer to a property using the placeholder `${property}`.
 
 ###### Event Bus Server [Blueprint][apache aries osgi blueprint] [JMS] Section
-To configure the [Camel ActiveMQ Component][apache camel activemq component] component I initiate a JMS pooled connection factory (with just one connection in the pool)
+To configure the [Camel ActiveMQ Component][apache camel activemq component] component, a JMS pooled connection factory having size equals to one, is initialized
 ```xml
 <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
 	<property name="brokerURL">
@@ -296,13 +298,13 @@ To configure the [Camel ActiveMQ Component][apache camel activemq component] com
 	<property name="connectionFactory" ref="jmsConnectionFactory" />
 </bean>
 ```
-where `${jmsUrl}` refers to the property contained into the configuration file, and I put it into the Camel JmsConfiguration
+The `${jmsUrl}` refers to the property contained into the configuration. This pool is then passed to the Camel JmsConfiguration
 ```xml
 <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
 	<property name="connectionFactory" ref="jmsPooledConnectionFactory" />
 </bean>
 ```
-The Camel JmsConfiguration is used to set the `configuration` field of the component
+that is used to set the `configuration` field of the  [Camel ActiveMQ Component][apache camel activemq component].
 ```xml
 <bean id="eventBusServerJms" class="org.apache.activemq.camel.component.ActiveMQComponent">
 	<property name="configuration" ref="jmsConfig" />
@@ -311,7 +313,7 @@ The Camel JmsConfiguration is used to set the `configuration` field of the compo
 > Note that the `eventBusServerJms` is the ID passed to the `EventBusServerRouteBuilder` as `jmsComponentId`.
 
 ###### Event Bus Server [Blueprint][apache aries osgi blueprint] [JTA] and [JPA]
-To configure the [JPA  Component][apache camel jpa component] I initiate the JTA Transaction Manager
+To configure the [JPA  Component][apache camel jpa component] a JTA Transaction Manager is initialized
 ```xml
 <reference id="jtaTransactionManager" interface="javax.transaction.TransactionManager" />
 
@@ -319,7 +321,7 @@ To configure the [JPA  Component][apache camel jpa component] I initiate the JTA
 	<argument ref="jtaTransactionManager" />
 </bean>
 ```
-used to set the `transactionManager` field of the component. To set the `entityManagerFactory` field I use the [Apache Aries JPA] framework (it's needed to import the namespace `http://aries.apache.org/xmlns/jpa/v1.1.0` in order to use the [Aries][Apache Aries JPA] framework) via the `unit` tag.
+and used to set the `transactionManager` field of the component. To set the `entityManagerFactory` field I used the [Apache Aries JPA] framework (in order to use the framework it's needed to import the namespace `http://aries.apache.org/xmlns/jpa/v1.1.0`) via the `unit` tag.
 ```xml
 <bean id="eventBusServerJpa" class="org.apache.camel.component.jpa.JpaComponent">
 	<jpa:unit unitname="event_bus_pu" property="entityManagerFactory" />
@@ -332,7 +334,7 @@ The value of the property `unitname` refers to the name of the persistence unit 
 ###### Event Bus Server [Blueprint][apache aries osgi blueprint] [Camel][apache camel]
 To use [Camel via OSGi Blueprint][apache camel osgi blueprint] we need to import the namespace `http://camel.apache.org/schema/blueprint`.
 
-I initiate the Route Builder
+The Route Builder is initialized
 ```xml
 <bean id="camelEventBusServerRouteBuilder" class="it.ninjatech.eventbus.server.route.EventBusServerRouteBuilder">
 	<argument value="eventBusServerJms" />
@@ -341,9 +343,9 @@ I initiate the Route Builder
 	<argument value="event_bus_pu" />
 </bean>
 ```
-passing the ID of the [ActiveMQ Component][apache camel activemq component], the name of the queue, the ID of the [JPA Component][apache camel jpa component] and the name of the persistence unit.
+with the ID of the [ActiveMQ Component][apache camel activemq component], the name of the queue, the ID of the [JPA Component][apache camel jpa component] and the name of the persistence unit.
 
-Finally I initiate the [Context][apache camel context]
+Finally the [Context][apache camel context] is initialized
 ```xml
 <camel:camelContext id="eventBusEngineCamel">
 	<camel:routeBuilder ref="camelEventBusServerRouteBuilder" />
@@ -492,7 +494,7 @@ public class EventBusClientRouteBuilder extends RouteBuilder {
 }
 ```
 
-As the Client has to be used by other applications ([Warehouse Service] in this tutorial) it must export the service that will be used by the applications.  
+Because the Client has to be used by other applications ([Warehouse Service] in this tutorial) it must export the service that will be used by the applications.  
 The interface `EventBusClientService` defines the service interface
 ```java
 public interface EventBusClientService {
@@ -843,13 +845,13 @@ The Warehouse Service blueprint can be, ideally, divided into five sections:
 5. [Camel section][warehouse service blueprint camel section];
 
 ###### Warehouse Service [Blueprint][apache aries osgi blueprint] Service Section
-In the service section I import the [Event Bus Client] service that will be used to publish the events
+In the service section the [Event Bus Client] service that will be used to publish the events is imported
 ```xml
 <reference id="eventBusClientService" timeout="0" interface="it.ninjatech.eventbus.client.EventBusClientService" />
 ```
 
 ###### Warehouse Service [Blueprint][apache aries osgi blueprint] Bean Section
-In the bean section I initialize the `EventHandler` needed by [Camel][apache camel] to build the route
+In the bean section the `EventHandler` needed by [Camel][apache camel] to build the route is initialized
 ```xml
 <bean id="eventHandler" class="it.ninjatech.warehouse.EventHandler">
 	<argument ref="eventBusClientService" />
@@ -857,7 +859,7 @@ In the bean section I initialize the `EventHandler` needed by [Camel][apache cam
 ```
 
 ###### Warehouse Service [Blueprint][apache aries osgi blueprint] [JPA] Section
-In the [JPA] section I initialize the [DAO] of the products passing the Entity Manager - handled by the [Aries][apache aries jpa] framework - and configuring the transaction policy (in order to use the `transaction` tag I had to import the namespace `http://aries.apache.org/xmlns/transactions/v1.0.0`)
+In the [JPA] section the [DAO] of the products is initialized with the Entity Manager - handled by the [Aries][apache aries jpa] framework - and the transaction policy (in order to use the `transaction` tag it's needed to import the namespace `http://aries.apache.org/xmlns/transactions/v1.0.0`) is set
 ```xml
 <bean id="productDao" class="it.ninjatech.warehouse.dao.ProductDao">
 	<jpa:context unitname="warehouse_pu" property="entityManager"/>
@@ -867,11 +869,11 @@ In the [JPA] section I initialize the [DAO] of the products passing the Entity M
 
 ###### Warehouse Service [Blueprint][apache aries osgi blueprint] [CXF][apache cxf] Section
 In the [CXF][apache cxf] section I configure the [REST] server.  
-I will initiate the [CXF][apache cxf] `WadlGenerator` that will automatically generate the [WADL] of the endpoints
+The [CXF][apache cxf] `WadlGenerator`, that will automatically generate the [WADL] of the endpoints, is initialized
 ```xml
 <bean id="wadlGenerator" class="org.apache.cxf.jaxrs.model.wadl.WadlGenerator" />
 ```
-and the `JacksonJsonProvider` that will be used by [CXF][apache cxf] to marshal/unmarshal the [JSON] objects
+as well as the `JacksonJsonProvider` that will be used by [CXF][apache cxf] to marshal/unmarshal the [JSON] objects
 ```xml	
 <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
 ```
@@ -886,7 +888,7 @@ At the end there is the [REST] server configuration
 ```
 
 ###### Warehouse Service [Blueprint][apache aries osgi blueprint] [Camel][apache camel] Section
-In the [Camel][apache camel] section I initiate the route builder
+In the [Camel][apache camel] section the Route Builder is initialized
 ```xml
 <bean id="camelWarehouseRouteBuilder" class="it.ninjatech.warehouse.route.WarehouseRouteBuilder">
 	<argument value="warehouseRs" />
@@ -894,9 +896,9 @@ In the [Camel][apache camel] section I initiate the route builder
 	<argument value="eventHandler" />
 </bean>
 ```
-passing the [CXF][apache cxf] Server ID, the [DAO] ID and the Event Handler ID.
+with the [CXF][apache cxf] Server ID, the [DAO] ID and the Event Handler ID.
 
-Finally I initiate the [Context][apache camel context]
+Finally the [Context][apache camel context] is initialized
 ```xml
 <camel:camelContext id="warehouseCamel">
 	<camel:routeBuilder ref="camelWarehouseRouteBuilder" />
