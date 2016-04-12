@@ -1476,7 +1476,7 @@ Released and distributed under the [Apache License Version 2.0](http://www.apach
 [warehouse service blueprint service section]: #warehouse-service-blueprint-service-section
 [warehouse service code]: #warehouse-service-code
 [warehouse service code data model and dao]: #warehouse-service-code-data-model-and-dao
-[warehouse service code endpoints]: [#warehouse-service-code-endpoints]
+[warehouse service code endpoints]: #warehouse-service-code-endpoints
 [warehouse service code event handler]: #warehouse-service-code-event-handler
 [warehouse service jpa persistence descriptor]: #warehouse-service-jpa-persistence-descriptor
 [warehouse service pom]: #warehouse-service-pom
