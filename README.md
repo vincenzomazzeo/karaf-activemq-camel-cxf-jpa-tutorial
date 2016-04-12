@@ -4,6 +4,62 @@ Karaf \ ActiveMQ \ Camel \ CXF \ JPA Tutorial
 In this tutorial I'll try to explain how to integrate [Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apache CXF] and [JPA] in order to build an Enterprise System.
 
 ## Table of Contents
+* [Technologies]
+* [Overview]
+* [System Architecture]
+* [Environment]
+	* [H2 Setup]
+	* [Apache ActiveMQ Setup]
+	* [Apache Karaf Setup]
+* [Databases]
+	* [Event Bus Database]
+	* [Warehouse Database]
+* [Applications]
+	* [Event Bus]
+		* [Event Bus Model]
+			* [Event Bus Model Code]
+			* [Event Bus Model JPA Persistence Descriptor]
+			* [Event Bus Model POM]
+		* [Event Bus Server]
+			* [Event Bus Server Code]
+			* [Event Bus Server Blueprint]
+				* [Event Bus Server Blueprint Configuration Section]
+				* [Event Bus Server Blueprint JMS Section]
+				* [Event Bus Server Blueprint JTA and JPA Section]
+				* [Event Bus Server Blueprint Camel Section]
+			* [Event Bus Server POM]
+		* [Event Bus Client]
+			* [Event Bus Client Code]
+			* [Event Bus Client Blueprint]
+				* [Event Bus Client Blueprint Configuration Section]
+				* [Event Bus Client Blueprint JMS Section]
+				* [Event Bus Client Blueprint Camel Section]
+				* [Event Bus Client Blueprint Service Section]
+			* [Event Bus Client POM]
+		* [Event Bus Features]
+			* [Event Bus Features XML]
+			* [Event Bus Features POM]
+	* [Warehouse]
+		* [Warehouse Service]
+			* [Warehouse Service Code]
+				* [Warehouse Service Code Data Model and DAO]
+				* [Warehouse Service Code Endpoints]
+				* [Warehouse Service Code Event Handler]
+			* [Warehouse Service Blueprint]
+				* [Warehouse Service Blueprint Service Section]
+				* [Warehouse Service Blueprint Bean Section]
+				* [Warehouse Service Blueprint JPA Section]
+				* [Warehouse Service Blueprint CXF Section]
+				* [Warehouse Service Blueprint Camel Section]
+			* [Warehouse Service JPA Persistence Descriptor]
+			* [Warehouse Service POM]
+		* [Warehouse Features]
+			* [Warehouse Features XML]
+* [Build]
+* [Deploy]
+* [Test]
+* [License]
+* [References]
 
 ## Technologies
 I have used the following versions of these technologies:
@@ -13,13 +69,18 @@ I have used the following versions of these technologies:
 - [Apache Camel] version 2.15.2
 - [Apache CXF] version 3.0.4
 - [JPA] version 2.0.0
-- [Jackson] version 2.7.3
+
+The Java version used is 1.7.0_79.  
 
 The [JPA] implementation used is [Apache OpenJPA] version 2.3.0.  
-The Java version used is 1.7.0_79.  
-The DBMS used is [H2] version 1.3.176 (2014-04-05).  
-The tool used to query the DB is [SQLWorkbench] build 119 (2016-01-31).  
-The [REST] client used is Advanced Rest Client Application for Chrome version 4.12.8 Stable.
+
+Other tools and third-party libraries used are:
+
+- [H2] version 1.3.176 (2014-04-05) as DBMS
+- [SQLWorkbench] build 119 (2016-01-31) as query tool
+- Advanced Rest Client Application for Chrome version 4.12.8 Stable as [REST] client
+- [Apache Maven][apache maven] version 3.3.9
+- [Jackson] version 2.7.3
 
 ## Overview
 In the last times I used [Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apache CXF] and [JPA] in order to build enterprise systems and many times I faced with integration problems. Fortunately Internet helped me to get out of these problems but often the tutorials/documentations found were about _HelloWorld_ examples. So I decided to write a tutorial (this tutorial) to describe how to integrate all of these technologies designing and implementing a complete enterprise system even if simple.
@@ -28,7 +89,7 @@ In the last times I used [Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apa
 ![System Architecture](/images/system_architecture.png)
 
 ## Environment
-### [H2]
+### [H2] Setup
 The system uses two DBs, one used by the [Event Bus Server] module and one used by the [Warehouse Service].  
 The DBMS used is [H2] started in _Server Mode_. Once downloaded and unzipped the zip (for more information about installation refer to the [documentation][h2 installation]) launch the DBMS with
 ```bash
@@ -36,10 +97,33 @@ C:\Tools\h2\bin\java -cp "h2-1.3.176.jar;%H2DRIVERS%;%CLASSPATH%" org.h2.tools.S
 ```
 ![H2 Shell](/images/h2_shell.png)
 
+### [Apache ActiveMQ] Setup
+Once downloaded and unzipped the zip (for more information about the installation and usage refer to the [documentation][apache activemq documentation]) launch ActiveMQ with
+```bash
+activemq.bat start
+```
+![ActiveMQ Shell](/images/activemq_shell.png)
+
+After the service has started, it's possible to access the console using the browser and accessing to the URL `http://localhost:8161`  
+
+![ActiveMQ Console](/images/activemq_console.png)
+
+### [Apache Karaf] Setup
+To simulate a more complex system this tutorial uses two instances of [Karaf][apache karaf], the first in which is deployed the [Event Bus Server] and the second in which are deployed the [Event Bus Client] and the [Warehouse Service].
+Once downloaded and unzipped the zip (for more information about installation and usage refer to the [User Guide][apache karaf user guide]) in two different directories (I used the suffixes _first_ and _second_) launch both instances with
+```bash
+karaf
+```
+>Note: in order to launch the second instance it's necessary to change the `rmiRegistryPort` and `rmiServerPort` properties of the `org.apache.karaf.management.cfg` file located in the `etc` directory. I set them respectively to `1098` and `44443`
+
+![Karaf Shell First](/images/karaf_shell_first.png)
+![Karaf Shell Second](/images/karaf_shell_second.png)
+
+## Databases
 To manage the DB I used [SQLWorkbench].
 
-Let's start to manage the Event Bus DB. 
-The connection URL is `jdbc:h2:~/event_bus;AUTO_SERVER=TRUE` and the user is `sa` with blank password.  
+### Event Bus Database
+The connection URL to connect to the Event Bus DB is `jdbc:h2:~/event_bus;AUTO_SERVER=TRUE` and the user is `sa` with blank password.  
 
 ![SQLWorkbench Event Bus Connection](/images/sqlworkbench_eventbus_connection.png)
 
@@ -58,8 +142,8 @@ As there is an _IDENTITY_ column, the DBMS will create a sequence used to automa
 
 ![SQLWorkbench Event Bus Schema](/images/sqlworkbench_eventbus_schema.png)
 
-Then let's manage the Warehouse DB.
-The connection URL is `jdbc:h2:~/warehouse;AUTO_SERVER=TRUE` and the user is `sa` with blank password.  
+### Warehouse Database
+The connection URL to connect to the Warehouse DB is `jdbc:h2:~/warehouse;AUTO_SERVER=TRUE` and the user is `sa` with blank password.  
 
 ![SQLWorkbench Warehouse Connection](/images/sqlworkbench_warehouse_connection.png)
 
@@ -76,28 +160,6 @@ CREATE TABLE product (
 CREATE SEQUENCE product_sequence INCREMENT BY 1;
 ```
 ![SQLWorkbench Warehouse Schema](/images/sqlworkbench_warehouse_schema.png)
-
-### [Apache ActiveMQ]
-Once downloaded and unzipped the zip (for more information about the installation and usage refer to the [documentation][apache activemq documentation]) launch ActiveMQ with
-```bash
-activemq.bat start
-```
-![ActiveMQ Shell](/images/activemq_shell.png)
-
-After the service has started, it's possible to access the console using the browser and accessing to the URL `http://localhost:8161`  
-
-![ActiveMQ Console](/images/activemq_console.png)
-
-### [Apache Karaf]
-To simulate a more complex system this tutorial uses two instances of [Karaf][apache karaf], the first in which is deployed the [Event Bus Server] and the second in which are deployed the [Event Bus Client] and the [Warehouse Service].
-Once downloaded and unzipped the zip (for more information about installation and usage refer to the [User Guide][apache karaf user guide]) in two different directories (I used the suffixes _first_ and _second_) launch both instances with
-```bash
-karaf
-```
->Note: in order to launch the second instance it's necessary to change the `rmiRegistryPort` and `rmiServerPort` properties of the `org.apache.karaf.management.cfg` file located in the `etc` directory. I set them respectively to `1098` and `44443`
-
-![Karaf Shell First](/images/karaf_shell_first.png)
-![Karaf Shell Second](/images/karaf_shell_second.png)
 
 ## Applications
 
@@ -312,7 +374,7 @@ that is used to set the `configuration` field of the  [Camel ActiveMQ Component]
 ```
 > Note that the `eventBusServerJms` is the ID passed to the `EventBusServerRouteBuilder` as `jmsComponentId`.
 
-###### Event Bus Server [Blueprint][apache aries osgi blueprint] [JTA] and [JPA]
+###### Event Bus Server [Blueprint][apache aries osgi blueprint] [JTA] and [JPA] Section
 To configure the [JPA  Component][apache camel jpa component] a JTA Transaction Manager is initialized
 ```xml
 <reference id="jtaTransactionManager" interface="javax.transaction.TransactionManager" />
@@ -331,7 +393,7 @@ and used to set the `transactionManager` field of the component. To set the `ent
 The value of the property `unitname` refers to the name of the persistence unit defined into the [JPA Persistence Descriptor] of the [Event Bus Model] module.
 > Note that the `eventBusServerJpa` is the ID passed to the `EventBusServerRouteBuilder` as `jpaComponentId`.
 
-###### Event Bus Server [Blueprint][apache aries osgi blueprint] [Camel][apache camel]
+###### Event Bus Server [Blueprint][apache aries osgi blueprint] [Camel][apache camel] Section
 To use [Camel via OSGi Blueprint][apache camel osgi blueprint] we need to import the namespace `http://camel.apache.org/schema/blueprint`.
 
 The Route Builder is initialized
@@ -1192,8 +1254,100 @@ Following is the complete content of the `features.xml` file
 </features>
 ```
 
+## Build
+In order to build the applications I call the install phase of [Maven][apache maven] on both applications, [Event Bus] and [Warehouse]
+```
+cd karaf-activemq-camel-cxf-jpa-tutorial\event-bus
+mvn install
+```
+```
+cd karaf-activemq-camel-cxf-jpa-tutorial\warehouse
+mvn install
+```
+
 ## Deploy
-TODO
+As said we'll take advantage of the concept of [Apache Karaf Features] to deploy the applications.  
+
+First I deploy the [Event Bus Server] module in the first instance of [Karaf][apache karaf].  
+The [Event Bus Server] needs the datasource called `event_bus_ds` so I have to deploy it creating the file `org.ops4j.datasource-event-bus.cfg` in the `etc` directory containing the datasource configuration.
+Following is the content of the configuration file
+```
+osgi.jdbc.driver.name=H2-pool
+url=jdbc:h2:~/event_bus;AUTO_SERVER=TRUE
+user=sa
+dataSourceName=event_bus_ds
+```
+In order to deploy the module I add the [Event Bus] features repository by typing
+```
+feature:repo-add mvn:it.ninjatech.karaf-activemq-camel-cxf-jpa-tutorial/event-bus-features/1.0.0/xml/features
+```
+and then I install the server module by typing
+```
+feature:install event-bus-server
+```
+The [Event Bus Server] module installs all the repositories and modules it needs to run as we can see by typing
+```
+list
+```
+![Karaf List](/images/karaf_first_list.png)
+
+Even the configuration is created as we can see by typing
+```
+config:list "(service.pid=it.ninjatech.eventbus)"
+```
+![Karaf Config](/images/karaf_first_config.png)
+
+To check the `event_bus_ds` datasource status we can type 
+```
+jdbc:datasources
+```
+![Karaf Datasources](/images/karaf_first_datasources.png)
+
+The [ActiveMQ][apache activemq] console displays the newly created `event-bus` queue with a consumer attached
+![ActiveMQ Queue](/images/activemq_shell_queues.png)
+
+In the second instance of [Karaf][apache karaf] I install the [Warehouse Service] module.  
+Such as the [Event Bus Server] module even the [Warehouse Service] module needs a datasource, the `warehouse_ds` datasource, so I create the `org.ops4j.datasource-warehouse.cfg` file with the following content
+```
+osgi.jdbc.driver.name=H2-pool
+url=jdbc:h2:~/warehouse;AUTO_SERVER=TRUE
+user=sa
+dataSourceName=warehouse_ds
+```
+Then I type
+```
+feature:repo-add mvn:it.ninjatech.karaf-activemq-camel-cxf-jpa-tutorial/warehouse-features/1.0.0/xml/features
+```
+to add the [Warehouse] features repository and
+```
+feature:install warehouse-service
+```
+to install the [Warehouse Service] module.
+As we can by typing
+```
+list
+```
+the [Warehouse Service] installs the [Event Bus Client] module too
+![Karaf List](/images/karaf_second_list.png)
+
+To check the `warehouse_ds` datasource status we can type
+```
+jdbc:datasources
+```
+![Karaf Config](/images/karaf_first_config.png)
+
+By typing
+```
+cxf:list-busses
+```
+and
+```
+cxf:list-endpoints
+```
+we can check the CXF status
+![Karaf CXF](/images/karaf_first_cxf.png)
+
+Now the applications are deployed and running.
 
 ## Test
 TODO
@@ -1270,23 +1424,59 @@ Released and distributed under the [Apache License Version 2.0](http://www.apach
 [rest]: https://en.wikipedia.org/wiki/Representational_state_transfer
 [wadl]: https://en.wikipedia.org/wiki/Web_Application_Description_Language
 
+[apache activemq setup]: #apache-activemq-setup
+[apache karaf setup]: #apache-karaf-setup
+[applications]: #applications
+[build]: #build
+[databases]: #databases
+[deploy]: #deploy
+[environment]: #environment
 [event bus]: #event-bus
 [event bus client]: #event-bus-client
+[event bus client blueprint]: #event-bus-client-blueprint
 [event bus client blueprint camel section]: #event-bus-client-blueprint-camel-section
 [event bus client blueprint configuration section]: #event-bus-client-blueprint-configuration-section
 [event bus client blueprint jms section]: #event-bus-client-blueprint-jms-section
 [event bus client blueprint service section]: #event-bus-client-blueprint-service-section
-[event bus model]: #event-bus-model
+[event bus client code]: #event-bus-client-code
+[event bus client pom]: #event-bus-client-pom
+[event bus database]: #event-bus-database
 [event bus features]: #event-bus-features
+[event bus features pom]: #event-bus-features-pom
+[event bus features xml]: #event-bus-features-xml
+[event bus model]: #event-bus-model
+[event bus model code]: #event-bus-model-code
+[event bus model jpa persistence descriptor]: #event-bus-model-jpa-persistence-descriptor
+[event bus model pom]: #event-bus-model-pom
 [event bus server]: #event-bus-server
 [event bus server blueprint]: #event-bus-server-blueprint
 [event bus server blueprint camel section]: #event-bus-server-blueprint-camel-section
 [event bus server blueprint configuration section]: #event-bus-server-blueprint-configuration-section
 [event bus server blueprint jms section]: #event-bus-server-blueprint-jms-section
 [event bus server blueprint jta and jpa section]: #event-bus-server-blueprint-jta-and-jpa-section
+[event bus server code]: #event-bus-server-code
+[event bus server pom]: #event-bus-server-pom
+[h2 setup]: #h2-setup
+[license]: #license
+[overview]: #overview
+[references]: #references
+[system architecture]: #system-architecture
+[technologies]: #technologies
+[test]: #test
+[warehouse]: #warehouse
+[warehouse database]: #warehouse-database
+[warehouse features]: #warehouse-features
+[warehouse features xml]: #warehouse-features-xml
 [warehouse service]: #warehouse-service
-[warehouse service blueprint service section]: #warehouse-service-blueprint-service-section
+[warehouse service blueprint]: #warehouse-service-blueprint
 [warehouse service blueprint bean section]: #warehouse-service-blueprint-bean-section
-[warehouse service blueprint jpa section]: #warehouse-service-blueprint-jpa-section
-[warehouse service blueprint cxf section]: #warehouse-service-blueprint-cxf-section
 [warehouse service blueprint camel section]: #warehouse-service-blueprint-camel-section
+[warehouse service blueprint cxf section]: #warehouse-service-blueprint-cxf-section
+[warehouse service blueprint jpa section]: #warehouse-service-blueprint-jpa-section
+[warehouse service blueprint service section]: #warehouse-service-blueprint-service-section
+[warehouse service code]: #warehouse-service-code
+[warehouse service code data model and dao]: #warehouse-service-code-data-model-and-dao
+[warehouse service code endpoints]: [#warehouse-service-code-endpoints]
+[warehouse service code event handler]: #warehouse-service-code-event-handler
+[warehouse service jpa persistence descriptor]: #warehouse-service-jpa-persistence-descriptor
+[warehouse service pom]: #warehouse-service-pom
