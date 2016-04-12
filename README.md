@@ -1269,7 +1269,7 @@ mvn install
 As said we'll take advantage of the concept of [Apache Karaf Features] to deploy the applications.  
 
 First I deploy the [Event Bus Server] module in the first instance of [Karaf][apache karaf].  
-The [Event Bus Server] needs the datasource called `event_bus_ds` so I have to deploy it creating the file `org.ops4j.datasource-event-bus.cfg` in the `etc` directory containing the datasource configuration.
+The [Event Bus Server] needs the datasource called `event_bus_ds` so I have to deploy it creating the file `org.ops4j.datasource-event-bus.cfg` in the `etc` directory containing the datasource configuration.  
 Following is the content of the configuration file
 ```
 osgi.jdbc.driver.name=H2-pool
@@ -1322,8 +1322,8 @@ to add the [Warehouse] features repository and
 ```
 feature:install warehouse-service
 ```
-to install the [Warehouse Service] module.
-As we can by typing
+to install the [Warehouse Service] module.  
+As we can see by typing
 ```
 list
 ```
@@ -1334,7 +1334,7 @@ To check the `warehouse_ds` datasource status we can type
 ```
 jdbc:datasources
 ```
-![Karaf Config](/images/karaf_first_config.png)
+![Karaf Datasources](/images/karaf_second_datasources.png)
 
 By typing
 ```
@@ -1345,7 +1345,7 @@ and
 cxf:list-endpoints
 ```
 we can check the CXF status
-![Karaf CXF](/images/karaf_first_cxf.png)
+![Karaf CXF](/images/karaf_second_cxf.png)
 
 Now the applications are deployed and running.
 
