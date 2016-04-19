@@ -1434,13 +1434,16 @@ The response is
   }
 ]
 ```
-and if we check the `product` table we can find the product inserted
+and if we check the `product` table we can find the just inserted product
+
 ![Product Data](/images/sqlworkbench_warehouse_product_data.png)
 
 Checking the [ActiveMQ][apache activemq] console we can notice that a message has been handled
+
 ![ActiveMQ Shell Queue One](/images/activemq_shell_queues_one.png)
 
 and the table `event_bus_journal` we can find an event
+
 ![EventBus Journal Data](/images/sqlworkbench_eventbus_journal_data.png)
 
 If we ask again for all products the result will be
