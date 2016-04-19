@@ -1354,7 +1354,7 @@ Now the applications are deployed and running.
 At this point we can test the applications.
 
 First of all we can ask for the WSDL calling
-```https
+```http
 GET http://localhost:9191/warehouse?_wadl HTTP/1.1
 ```
 The result is
