@@ -58,6 +58,7 @@ In this tutorial I'll try to explain how to integrate [Apache Karaf], [Apache Ac
 * [Build]
 * [Deploy]
 * [Test]
+* [Conclusion]
 * [License]
 * [References]
 
@@ -1350,7 +1351,154 @@ we can check the CXF status
 Now the applications are deployed and running.
 
 ## Test
-TODO
+At this point we can test the applications.
+
+First of all we can ask for the WSDL calling
+```https
+GET http://localhost:9191/warehouse?_wadl HTTP/1.1
+```
+The result is
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://wadl.dev.java.net/2009/02" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <grammars />
+  <resources base="http://localhost:9191/warehouse">
+    <resource path="/">
+      <resource path="product">
+        <method name="GET">
+          <response>
+            <representation mediaType="application/json" />
+          </response>
+        </method>
+        <method name="POST">
+          <request>
+            <representation mediaType="application/json" />
+          </request>
+          <response>
+            <representation mediaType="application/json" />
+          </response>
+        </method>
+      </resource>
+      <resource path="product/{productId}">
+        <param name="productId" style="template" type="xs:int" />
+        <method name="DELETE">
+          <request />
+          <response>
+            <representation mediaType="application/json" />
+          </response>
+        </method>
+        <method name="PUT">
+          <request>
+            <representation mediaType="application/json" />
+          </request>
+          <response>
+            <representation mediaType="application/json" />
+          </response>
+        </method>
+      </resource>
+    </resource>
+  </resources>
+</application>
+```
+As we can see there are the four CRUD operations.
+
+Let's start asking for all products
+```http
+GET http://localhost:9191/warehouse/product HTTP/1.1
+Accept: application/json
+```
+The result is
+```json
+[]
+```
+as we don't have products yet.
+
+Let's add a product calling
+```http
+POST http://localhost:9191/warehouse/product HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+```
+with the payload
+```json
+{
+  "name": "My first product"
+}
+```
+The response is
+```json
+[
+  {
+    "id": 3,
+    "name": "My first product"
+  }
+]
+```
+and if we check the `product` table we can find the product inserted
+![Product Data](/images/sqlworkbench_warehouse_product_data.png)
+
+Checking the [ActiveMQ][apache activemq] console we can notice that a message has been handled
+![ActiveMQ Shell Queue One](/images/activemq_shell_queues_one.png)
+
+and the table `event_bus_journal` we can find an event
+![EventBus Journal Data](/images/sqlworkbench_eventbus_journal_data.png)
+
+If we ask again for all products the result will be
+```json
+[
+  {
+    "id": 3,
+    "name": "My first product"
+  }
+]
+```
+
+Now let's modify the product's name calling
+```http
+PUT http://localhost:9191/warehouse/product/3 HTTP/1.1
+Content-Type: application/json
+Accept: application/json
+```
+with the payload
+```json
+{
+  "name": "New Product Name"
+}
+```
+The response is
+```json
+[
+  {
+    "id": 3,
+    "name": "New Product Name"
+  }
+]
+```
+and checking the tables and [ActiveMQ][apache activemq] console we can find
+![Product Data Two](/images/sqlworkbench_warehouse_product_data_two.png)
+
+![ActiveMQ Shell Queue Two](/images/activemq_shell_queues_two.png)
+
+![EventBus Journal Data Two](/images/sqlworkbench_eventbus_journal_data_two.png)
+
+Finally we can remove the product calling
+```http
+DELETE http://localhost:9191/warehouse/product/3 HTTP/1.1
+Accept: application/json
+```
+The response is
+```json
+3
+```
+and checking the tables and [ActiveMQ][apache activemq] console we can find
+![Product Data Three](/images/sqlworkbench_warehouse_product_data_three.png)
+
+![ActiveMQ Shell Queue Three](/images/activemq_shell_queues_three.png)
+
+![EventBus Journal Data Three](/images/sqlworkbench_eventbus_journal_data_three.png)
+
+## Conclusion
+[Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apache CXF] and [JPA] are powerful technologies with which can be built robust and scalable enterprise applications. In this tutorial I have tried to explain how to integrate them designing and implementing a simple but complete system.
 
 ## License
 Released and distributed under the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
@@ -1428,6 +1576,7 @@ Released and distributed under the [Apache License Version 2.0](http://www.apach
 [apache karaf setup]: #apache-karaf-setup
 [applications]: #applications
 [build]: #build
+[conclusion]: #conclusion
 [databases]: #databases
 [deploy]: #deploy
 [environment]: #environment
