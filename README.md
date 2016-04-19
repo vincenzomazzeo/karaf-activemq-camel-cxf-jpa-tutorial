@@ -1442,7 +1442,7 @@ Checking the [ActiveMQ][apache activemq] console we can notice that a message ha
 
 ![ActiveMQ Shell Queue One](/images/activemq_shell_queues_one.png)
 
-and the table `event_bus_journal` we can find an event
+and the table `event_bus_journal` now contains an event
 
 ![EventBus Journal Data](/images/sqlworkbench_eventbus_journal_data.png)
 
@@ -1477,7 +1477,8 @@ The response is
   }
 ]
 ```
-and checking the tables and [ActiveMQ][apache activemq] console we can find
+and checking the tables and the [ActiveMQ][apache activemq] console we can find
+
 ![Product Data Two](/images/sqlworkbench_warehouse_product_data_two.png)
 
 ![ActiveMQ Shell Queue Two](/images/activemq_shell_queues_two.png)
@@ -1493,7 +1494,8 @@ The response is
 ```json
 3
 ```
-and checking the tables and [ActiveMQ][apache activemq] console we can find
+and checking the tables and the [ActiveMQ][apache activemq] console we can find
+
 ![Product Data Three](/images/sqlworkbench_warehouse_product_data_three.png)
 
 ![ActiveMQ Shell Queue Three](/images/activemq_shell_queues_three.png)
@@ -1501,7 +1503,7 @@ and checking the tables and [ActiveMQ][apache activemq] console we can find
 ![EventBus Journal Data Three](/images/sqlworkbench_eventbus_journal_data_three.png)
 
 ## Conclusion
-[Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apache CXF] and [JPA] are powerful technologies with which can be built robust and scalable enterprise applications. In this tutorial I have tried to explain how to integrate them designing and implementing a simple but complete system.
+[Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apache CXF] and [JPA] are powerful technologies with which you can build robust and scalable enterprise applications. In this tutorial I have tried to explain how to integrate them designing and implementing a simple but complete system.
 
 ## License
 Released and distributed under the [Apache License Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
