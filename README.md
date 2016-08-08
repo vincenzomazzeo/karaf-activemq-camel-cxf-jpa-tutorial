@@ -84,7 +84,7 @@ Other tools and third-party libraries used are:
 - [Jackson] version 2.7.3
 
 ## Overview
-In the last times I used [Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apache CXF] and [JPA] in order to build enterprise systems and many times I faced with integration problems. Fortunately Internet helped me to get out of these problems but often the tutorials/documentations found were about _HelloWorld_ examples. So I decided to write a tutorial (this tutorial) to describe how to integrate all of these technologies designing and implementing a complete [fix] but simple enterprise system.
+In the last times I used [Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apache CXF] and [JPA] in order to build enterprise systems and many times I faced with integration problems. Fortunately Internet helped me to get out of these problems but often the tutorials/documentations found were about _HelloWorld_ examples. So I decided to write a tutorial (this tutorial) to describe how to integrate all of these technologies designing and implementing a complete but simple enterprise system.
 
 ## System Architecture
 ![System Architecture](/images/system_architecture.png)
@@ -94,7 +94,7 @@ In the last times I used [Apache Karaf], [Apache ActiveMQ], [Apache Camel], [Apa
 The system uses two DBs, one used by the [Event Bus Server] module and one used by the [Warehouse Service].  
 The DBMS used is [H2] started in _Server Mode_. Once downloaded and unzipped the zip (for more information about installation refer to the [documentation][h2 installation]) launch the DBMS with
 ```bash
-C:\Tools\h2\bin\java -cp "h2-1.3.176.jar;%H2DRIVERS%;%CLASSPATH%" org.h2.tools.Server -tcp
+“%JAVA_HOME%\bin\java” -cp "C:\Tools\h2\bin\h2-1.3.176.jar;%H2DRIVERS%;%CLASSPATH%" org.h2.tools.Server -tcp
 ```
 ![H2 Shell](/images/h2_shell.png)
 
@@ -110,7 +110,7 @@ After the service has started, it's possible to access the console using the bro
 ![ActiveMQ Console](/images/activemq_console.png)
 
 ### [Apache Karaf] Setup
-[fix] This tutorial uses two instances of [Karaf][apache karaf] to simulate a more complex system, the first [fix] one in which it is deployed the [Event Bus Server] and the second [fix] one in which the [Event Bus Client] and the [Warehouse Service] are deployed.
+This tutorial uses two instances of [Karaf][apache karaf] to simulate a more complex system, the first one in which it is deployed the [Event Bus Server] and the second one in which the [Event Bus Client] and the [Warehouse Service] are deployed.
 Once downloaded and unzipped the zip (for more information about installation and usage refer to the [User Guide][apache karaf user guide]) in two different directories (I used the suffixes _first_ and _second_) launch both instances with
 ```bash
 karaf
@@ -171,7 +171,7 @@ The Event Bus is a [publish/subscribe] system. It is composed of three modules:
 - [Server][event bus server] which is the subscriber;
 - [Client][event bus client] which is the publisher and it is used by the applications that need to publish events.
 
-In an enterprise system the [Server][event bus server] module could be deployed on a machine and the [Client][event bus client] module on another one, the same on which [fix] it is deployed the application that generates the events (in a complex enterprise system there could be many instances of the [Server][event bus server] module running on different machines and many instances of the [Client][event bus client] module used by different applications). The messaging server - [ActiveMQ][apache activemq] in this tutorial - could be installed on a third machine. In order to simulate this approach there will be two instances of [Karaf][apache karaf] - one for the [Server][event bus server] module and one for the [Client][event bus client] module and the application (The [Warehouse Service] in this tutorial).
+In an enterprise system the [Server][event bus server] module could be deployed on a machine and the [Client][event bus client] module on another one, the same on which it is deployed the application that generates the events (in a complex enterprise system there could be many instances of the [Server][event bus server] module running on different machines and many instances of the [Client][event bus client] module used by different applications). The messaging server - [ActiveMQ][apache activemq] in this tutorial - could be installed on a third machine. In order to simulate this approach there will be two instances of [Karaf][apache karaf] - one for the [Server][event bus server] module and one for the [Client][event bus client] module and the application (The [Warehouse Service] in this tutorial).
 
 In order to explain the integration between [ActiveMQ][apache activemq], [Camel][apache camel] and [JPA], each event will be dequeued and stored in the database by [Camel][apache camel] using its [ActiveMQ][apache camel activemq component] and [JPA][apache camel jpa component] components.
 
@@ -303,7 +303,7 @@ public class EventBusServerRouteBuilder extends RouteBuilder {
 
 }
 ```
-In this route, [Camel][apache camel], when a new message is enqueued, dequeues it and passes its body - the event - to the EventHandler (that set the receive timestamp) and then [fix] it stores the event into the database.
+In this route, [Camel][apache camel], when a new message is enqueued, dequeues it and passes its body - the event - to the EventHandler (that set the receive timestamp) and then it stores the event into the database.
 
 [Camel][apache camel] uses a [Registry][apache camel registry] to retrieve the components and since I'm using [OSGi Blueprint][apache aries osgi blueprint] to initialize the [Camel Context][apache camel context] (see [Blueprint][event bus server blueprint]), every bean initialized in the same blueprint is put in the registry using its ID as key. So when the `EventBusServerRouteBuilder` is initialized, it receives the components' IDs and the other informations needed by [Camel][apache camel] to build the route.
 ```java
@@ -540,9 +540,9 @@ public class EventBusClientRouteBuilder extends RouteBuilder {
 
 }
 ```
-In this route when [Camel][apache camel] receives an event from the [direct][apache camel direct component] endpoint, [fix] it enqueues it.
+In this route when [Camel][apache camel] receives an event from the [direct][apache camel direct component] endpoint, it enqueues it.
 
-Like the [Server][event bus server] module when the `EventBusClientRouteBuilder` is initialized, it receives the component's ID and the other [fix] information needed by [Camel][apache camel] to build the route.
+Like the [Server][event bus server] module when the `EventBusClientRouteBuilder` is initialized, it receives the component's ID and the other information needed by [Camel][apache camel] to build the route.
 ```java
 public class EventBusClientRouteBuilder extends RouteBuilder {
 
@@ -733,7 +733,7 @@ The Event Bus Features module contains only the `feature.xml` file needed by [Ka
 ![Event Bus Features Structure](/images/eventbusfeatures_structure.png)
 
 ##### Event Bus Features XML
-In the `features.xml` file [fix] the dependencies and the modules - called features - of the application are listed.
+In the `features.xml` file the dependencies and the modules - called features - of the application are listed.
 
 First there is the list of the repositories that contain the third-party features needed by the application
 ```xml
@@ -993,7 +993,7 @@ public void configure() throws Exception {
 ```
 
 ###### Warehouse Service Code Event Handler
-The `EventHandler` class is the bridge between the Warehouse Service and the [Event Bus Client]: it creates the events and [fix] sends them using the `EventBusClientService` passed to it in the [blueprint][warehouse service blueprint bean section].
+The `EventHandler` class is the bridge between the Warehouse Service and the [Event Bus Client]: it creates the events and sends them using the `EventBusClientService` passed to it in the [blueprint][warehouse service blueprint bean section].
 
 ##### Warehouse Service [Blueprint][apache aries osgi blueprint]
 The Warehouse Service blueprint can be, ideally, divided into five sections:
@@ -1269,7 +1269,7 @@ mvn install
 ## Deploy
 As said we'll take advantage of the concept of [Apache Karaf Features] to deploy the applications.  
 
-[fix] Firstly I deploy the [Event Bus Server] module in the first instance of [Karaf][apache karaf].  
+Firstly I deploy the [Event Bus Server] module in the first instance of [Karaf][apache karaf].  
 The [Event Bus Server] needs the datasource called `event_bus_ds` so I have to deploy it creating the file `org.ops4j.datasource-event-bus.cfg` in the `etc` directory containing the datasource configuration.  
 Following is the content of the configuration file
 ```
